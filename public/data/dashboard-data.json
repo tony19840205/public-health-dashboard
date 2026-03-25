@@ -1,6 +1,6 @@
 {
-  "exportedAt": "2026-03-25T14:27:28.815Z",
-  "source": "/FHIR-CQL-Quality-Platform-20260204/esg-indicators.html",
+  "exportedAt": "2026-03-25T14:40:20.493Z",
+  "source": "/FHIR-CQL-Quality-Platform-20260204/public-health.html",
   "diseaseItems": [
     {
       "id": "covid19",
@@ -447,13 +447,45 @@
       "unit": "%"
     }
   ],
+  "healthIndicators": [
+    {
+      "id": "covid19-vaccine",
+      "name": "COVID-19 疫苗接種率",
+      "cql": "COVID19VaccinationCoverage",
+      "description": "監測 COVID-19 疫苗接種涵蓋率與劑次完成度",
+      "count": 22,
+      "rate": 1.91,
+      "countLabel": "接種人數",
+      "rateLabel": "接種率"
+    },
+    {
+      "id": "influenza-vaccine",
+      "name": "流感疫苗接種率",
+      "cql": "InfluenzaVaccinationCoverage",
+      "description": "追蹤季節性流感疫苗接種涵蓋率",
+      "count": 40,
+      "rate": 1,
+      "countLabel": "接種人數",
+      "rateLabel": "接種率"
+    },
+    {
+      "id": "hypertension",
+      "name": "高血壓活動個案數",
+      "cql": "HypertensionActiveCases",
+      "description": "監測高血壓患者的管理與控制情況",
+      "count": 572,
+      "rate": 0.35,
+      "countLabel": "活動個案",
+      "rateLabel": "控制率"
+    }
+  ],
   "esgIndicators": [
     {
       "id": "antibiotic",
       "name": "抗生素使用率",
       "cql": "Antibiotic_Utilization",
       "count": null,
-      "rate": 244.74,
+      "rate": null,
       "unit": "%"
     },
     {
@@ -461,7 +493,7 @@
       "name": "電子病歷採用率",
       "cql": "EHR_Adoption_Rate",
       "count": null,
-      "rate": 11.1,
+      "rate": null,
       "unit": "%"
     },
     {
@@ -469,7 +501,7 @@
       "name": "醫療廢棄物管理",
       "cql": "Waste",
       "count": null,
-      "rate": 7.42,
+      "rate": null,
       "unit": "%"
     }
   ],
@@ -478,9 +510,9 @@
     "qualityIndicators": 39,
     "diseaseItems": 5,
     "esgIndicators": 3,
-    "lastUpdated": "2026-03-25T14:27:28.817Z",
+    "lastUpdated": "2026-03-25T14:40:20.495Z",
     "queriedQuality": 0,
     "queriedDisease": 0,
-    "queriedESG": 3
+    "queriedESG": 0
   }
 }
