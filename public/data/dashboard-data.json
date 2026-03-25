@@ -1,6 +1,6 @@
 {
-  "exportedAt": "2026-03-25T15:26:57.105Z",
-  "source": "/FHIR-CQL-Quality-Platform-20260204/quality-indicators.html",
+  "exportedAt": "2026-03-25T15:28:09.879Z",
+  "source": "/FHIR-CQL-Quality-Platform-20260204/public-health.html",
   "diseaseItems": [
     {
       "id": "covid19",
@@ -453,8 +453,8 @@
       "name": "COVID-19 疫苗接種率",
       "cql": "COVID19VaccinationCoverage",
       "description": "監測 COVID-19 疫苗接種涵蓋率與劑次完成度",
-      "count": null,
-      "rate": null,
+      "count": 22,
+      "rate": 1.91,
       "countLabel": "接種人數",
       "rateLabel": "接種率"
     },
@@ -463,8 +463,8 @@
       "name": "流感疫苗接種率",
       "cql": "InfluenzaVaccinationCoverage",
       "description": "追蹤季節性流感疫苗接種涵蓋率",
-      "count": null,
-      "rate": null,
+      "count": 40,
+      "rate": 1,
       "countLabel": "接種人數",
       "rateLabel": "接種率"
     },
@@ -473,8 +473,8 @@
       "name": "高血壓活動個案數",
       "cql": "HypertensionActiveCases",
       "description": "監測高血壓患者的管理與控制情況",
-      "count": null,
-      "rate": null,
+      "count": 572,
+      "rate": 0.35,
       "countLabel": "活動個案",
       "rateLabel": "控制率"
     }
@@ -511,10 +511,10 @@
     "diseaseItems": 5,
     "healthIndicators": 3,
     "esgIndicators": 3,
-    "lastUpdated": "2026-03-25T15:26:57.105Z",
+    "lastUpdated": "2026-03-25T15:28:09.879Z",
     "queriedQuality": 4,
     "queriedDisease": 0,
-    "queriedHealth": 0,
+    "queriedHealth": 3,
     "queriedESG": 0
   }
 }
