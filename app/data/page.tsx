@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import {
   Search, Download, TrendingUp, TrendingDown, Minus,
-  Filter, Calendar, ChevronDown,
+  Filter, Calendar, ChevronDown, AlertTriangle,
 } from 'lucide-react';
 import { DiseaseTrendChart } from '@/components/charts';
 import {
@@ -22,9 +22,11 @@ export default function DataPage() {
   const [selectedRange, setSelectedRange] = useState('近 9 個月');
   const [sortField, setSortField] = useState<'disease' | 'thisMonth' | 'change'>('thisMonth');
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc');
+  const [dataSource, setDataSource] = useState<'mock' | 'real'>('mock');
 
   useEffect(() => {
     loadDashboardData().then((d) => {
+      if (d.exportedAt) setDataSource('real');
       setDiseaseTrend(d.diseaseTrendData);
       setDiseaseTable(d.diseaseTableData);
     });
@@ -45,6 +47,16 @@ export default function DataPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      {/* Data Source Banner */}
+      {dataSource === 'mock' && (
+        <div className="mb-6 flex items-center gap-3 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
+          <AlertTriangle className="w-5 h-5 text-amber-500 shrink-0" />
+          <p className="text-sm text-amber-800">
+            <span className="font-semibold">目前顯示為示範數據</span> — 待控制台執行查詢並匯出後將顯示真實數據
+          </p>
+        </div>
+      )}
+
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-2xl md:text-3xl font-bold text-slate-900">數據查詢</h1>

@@ -5,7 +5,7 @@ import Link from 'next/link';
 import {
   Activity, ShieldCheck, TrendingUp, Building2,
   Clock, BarChart3, MessageSquare, ArrowRight,
-  Sparkles, Bell, Tag, FileText, ChevronRight,
+  Sparkles, Bell, Tag, FileText, ChevronRight, AlertTriangle,
 } from 'lucide-react';
 import { StatCard } from '@/components/stat-card';
 import { DiseaseTrendChart, QualityBarChart } from '@/components/charts';
@@ -50,6 +50,29 @@ export default function HomePage() {
 
   return (
     <div>
+      {/* ─── Data Source Banner ─── */}
+      {dataSource === 'mock' && (
+        <div className="bg-amber-50 border-b border-amber-200 px-4 py-3">
+          <div className="max-w-7xl mx-auto flex items-center gap-3">
+            <AlertTriangle className="w-5 h-5 text-amber-500 shrink-0" />
+            <p className="text-sm text-amber-800">
+              <span className="font-semibold">目前顯示為示範數據</span>
+              <span className="hidden sm:inline"> — 待醫療品質控制台執行查詢並匯出後，將自動替換為真實數據</span>
+            </p>
+          </div>
+        </div>
+      )}
+      {dataSource === 'real' && (
+        <div className="bg-emerald-50 border-b border-emerald-200 px-4 py-3">
+          <div className="max-w-7xl mx-auto flex items-center gap-3">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            <p className="text-sm text-emerald-800">
+              <span className="font-semibold">真實數據</span> — 來自醫療品質控制台匯出
+            </p>
+          </div>
+        </div>
+      )}
+
       {/* ─── Hero ─── */}
       <section className="hero-gradient text-white relative overflow-hidden">
         <div className="absolute inset-0 opacity-10">
