@@ -6,12 +6,13 @@ import {
   Activity, ShieldCheck, TrendingUp, Building2,
   BarChart3, MessageSquare, ArrowRight,
   Sparkles, AlertTriangle, Pill, Stethoscope,
-  BedDouble, Scissors, HeartPulse, Leaf, Bug,
+  BedDouble, Scissors, HeartPulse, Leaf, Bug, Syringe, Heart,
 } from 'lucide-react';
 import { StatCard } from '@/components/stat-card';
 import {
   diseaseItems as defaultDiseaseItems,
   qualityIndicators as defaultQualityIndicators,
+  healthIndicators as defaultHealthIndicators,
   esgIndicators as defaultEsgIndicators,
   stats as defaultStats,
   categoryLabels,
@@ -40,6 +41,7 @@ const catColorMap: Record<string, { bg: string; border: string; text: string; ba
 export default function HomePage() {
   const [diseaseItems, setDiseaseItems] = useState(defaultDiseaseItems);
   const [qualityIndicators, setQualityIndicators] = useState(defaultQualityIndicators);
+  const [healthIndicators, setHealthIndicators] = useState(defaultHealthIndicators);
   const [esgIndicators, setEsgIndicators] = useState(defaultEsgIndicators);
   const [stats, setStats] = useState(defaultStats);
   const [dataSource, setDataSource] = useState<'mock' | 'real'>('mock');
@@ -49,6 +51,7 @@ export default function HomePage() {
       if (d.exportedAt) setDataSource('real');
       setDiseaseItems(d.diseaseItems);
       setQualityIndicators(d.qualityIndicators);
+      setHealthIndicators(d.healthIndicators);
       setEsgIndicators(d.esgIndicators);
       setStats(d.stats);
     });
@@ -64,6 +67,7 @@ export default function HomePage() {
   const queriedCount = qualityIndicators.filter(i => i.rate !== null).length;
   const diseaseQueried = diseaseItems.filter(i => i.patients !== null).length;
   const esgQueried = esgIndicators.filter(i => i.rate !== null).length;
+  const healthQueried = healthIndicators.filter(i => i.count !== null).length;
 
   return (
     <div>
@@ -134,10 +138,11 @@ export default function HomePage() {
 
       {/* ─── Stats ─── */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-10 relative z-10">
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
           <StatCard title="CQL 模組" value={stats.cqlModules} subtitle="臨床查詢模組" icon={Activity} variant="blue" />
           <StatCard title="品質指標" value={stats.qualityIndicators} subtitle="醫療品質量測" icon={TrendingUp} variant="emerald" />
           <StatCard title="疾病監控" value={stats.diseaseItems} subtitle="傳染病監測項目" icon={ShieldCheck} variant="amber" />
+          <StatCard title="國民健康" value={stats.healthIndicators} subtitle="疫苗與慢性病" icon={Heart} variant="blue" />
           <StatCard title="ESG 指標" value={stats.esgIndicators} subtitle="永續發展指標" icon={Leaf} variant="violet" />
         </div>
       </section>
@@ -168,6 +173,41 @@ export default function HomePage() {
                 </div>
                 <div className="text-xs text-slate-400 mt-1">
                   就診：{item.encounters !== null ? item.encounters : '--'}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ─── 國民健康 ─── */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
+        <div className="section-card">
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-indigo-100 flex items-center justify-center">
+                <Syringe className="w-5 h-5 text-indigo-600" />
+              </div>
+              <div>
+                <h2 className="text-xl font-bold text-slate-900">國民健康</h2>
+                <p className="text-sm text-slate-500">疫苗接種與慢性病管理{healthQueried > 0 && ` · ${healthQueried} 項已查詢`}</p>
+              </div>
+            </div>
+          </div>
+          <div className="grid sm:grid-cols-3 gap-4">
+            {healthIndicators.map((item) => (
+              <div key={item.id} className="p-5 rounded-xl border border-indigo-200 bg-indigo-50 hover:shadow-sm transition-shadow">
+                <p className="text-sm font-semibold text-slate-800 mb-1">{item.name}</p>
+                <p className="text-xs text-slate-500 mb-3">{item.description}</p>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <p className="text-xs text-slate-500">{item.countLabel}</p>
+                    <p className="text-xl font-bold text-slate-900">{item.count !== null ? item.count.toLocaleString() : '--'}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-slate-500">{item.rateLabel}</p>
+                    <p className="text-xl font-bold text-slate-900">{item.rate !== null ? `${item.rate}%` : '--'}</p>
+                  </div>
                 </div>
               </div>
             ))}

@@ -26,6 +26,17 @@ export interface QualityIndicator {
   unit: string;
 }
 
+export interface HealthIndicator {
+  id: string;
+  name: string;
+  cql: string;
+  description: string;
+  count: number | null;
+  rate: number | null;
+  countLabel: string;
+  rateLabel: string;
+}
+
 export interface ESGIndicator {
   id: string;
   name: string;
@@ -92,6 +103,14 @@ export const qualityIndicators: QualityIndicator[] = [
   { id: 'indicator-18', number: '18', name: '失智症安寧療護利用率', code: '2795Q', category: 'outcome', numerator: null, denominator: null, rate: null, unit: '%' },
 ];
 
+// ─── 國民健康指標（3 項 CQL）───
+
+export const healthIndicators: HealthIndicator[] = [
+  { id: 'covid19-vaccine', name: 'COVID-19 疫苗接種率', cql: 'COVID19VaccinationCoverage', description: '監測 COVID-19 疫苗接種涵蓋率與劑次完成度', count: null, rate: null, countLabel: '接種人數', rateLabel: '接種率' },
+  { id: 'influenza-vaccine', name: '流感疫苗接種率', cql: 'InfluenzaVaccinationCoverage', description: '追蹤季節性流感疫苗接種涵蓋率', count: null, rate: null, countLabel: '接種人數', rateLabel: '接種率' },
+  { id: 'hypertension', name: '高血壓活動個案數', cql: 'HypertensionActiveCases', description: '監測高血壓患者的管理與控制情況', count: null, rate: null, countLabel: '活動個案', rateLabel: '控制率' },
+];
+
 // ─── ESG 永續指標（3 項 CQL）───
 
 export const esgIndicators: ESGIndicator[] = [
@@ -106,6 +125,7 @@ export const stats = {
   cqlModules: 50,
   qualityIndicators: 39,
   diseaseItems: 5,
+  healthIndicators: 3,
   esgIndicators: 3,
   lastUpdated: '',
 };

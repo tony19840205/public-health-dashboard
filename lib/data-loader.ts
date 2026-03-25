@@ -6,10 +6,12 @@
 import {
   diseaseItems as defaultDiseaseItems,
   qualityIndicators as defaultQualityIndicators,
+  healthIndicators as defaultHealthIndicators,
   esgIndicators as defaultEsgIndicators,
   stats as defaultStats,
   type DiseaseItem,
   type QualityIndicator,
+  type HealthIndicator,
   type ESGIndicator,
 } from './mock-data';
 
@@ -17,6 +19,7 @@ export interface DashboardData {
   exportedAt?: string;
   diseaseItems: DiseaseItem[];
   qualityIndicators: QualityIndicator[];
+  healthIndicators: HealthIndicator[];
   esgIndicators: ESGIndicator[];
   stats: typeof defaultStats;
 }
@@ -34,6 +37,7 @@ export async function loadDashboardData(): Promise<DashboardData> {
       exportedAt: raw.exportedAt,
       diseaseItems: raw.diseaseItems ?? defaultDiseaseItems,
       qualityIndicators: raw.qualityIndicators ?? defaultQualityIndicators,
+      healthIndicators: raw.healthIndicators ?? defaultHealthIndicators,
       esgIndicators: raw.esgIndicators ?? defaultEsgIndicators,
       stats: raw.stats ?? defaultStats,
     };
@@ -41,6 +45,7 @@ export async function loadDashboardData(): Promise<DashboardData> {
     return {
       diseaseItems: defaultDiseaseItems,
       qualityIndicators: defaultQualityIndicators,
+      healthIndicators: defaultHealthIndicators,
       esgIndicators: defaultEsgIndicators,
       stats: defaultStats,
     };

@@ -4,11 +4,12 @@ import { useState, useEffect } from 'react';
 import {
   Search, AlertTriangle, Pill, Stethoscope,
   BedDouble, Scissors, HeartPulse, Activity,
-  Bug, Leaf,
+  Bug, Leaf, Syringe,
 } from 'lucide-react';
 import {
   diseaseItems as defaultDiseaseItems,
   qualityIndicators as defaultQualityIndicators,
+  healthIndicators as defaultHealthIndicators,
   esgIndicators as defaultEsgIndicators,
   categoryLabels,
   type QualityIndicator,
@@ -39,6 +40,7 @@ const catCardColors: Record<string, { bg: string; border: string; badge: string 
 export default function DataPage() {
   const [qualityIndicators, setQualityIndicators] = useState(defaultQualityIndicators);
   const [diseaseItems, setDiseaseItems] = useState(defaultDiseaseItems);
+  const [healthIndicators, setHealthIndicators] = useState(defaultHealthIndicators);
   const [esgIndicators, setEsgIndicators] = useState(defaultEsgIndicators);
   const [searchTerm, setSearchTerm] = useState('');
   const [activeCategory, setActiveCategory] = useState<Category>('all');
@@ -49,6 +51,7 @@ export default function DataPage() {
       if (d.exportedAt) setDataSource('real');
       setQualityIndicators(d.qualityIndicators);
       setDiseaseItems(d.diseaseItems);
+      setHealthIndicators(d.healthIndicators);
       setEsgIndicators(d.esgIndicators);
     });
   }, []);
@@ -80,7 +83,7 @@ export default function DataPage() {
       <div className="mb-8">
         <h1 className="text-2xl md:text-3xl font-bold text-slate-900">數據查詢</h1>
         <p className="text-slate-500 mt-1">
-          50 項 CQL 指標 · 39 醫療品質 · 5 傳染病 · 3 ESG
+          50 項 CQL 指標 · 39 醫療品質 · 5 傳染病 · 3 國民健康 · 3 ESG
           {queriedCount > 0 && <span className="text-emerald-600 font-medium"> · {queriedCount} 項已有數據</span>}
         </p>
       </div>
@@ -109,6 +112,38 @@ export default function DataPage() {
                 <div>
                   <p className="text-xs text-slate-500">就診數</p>
                   <p className="text-lg font-bold text-slate-900">{item.encounters !== null ? item.encounters : '--'}</p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════
+          國民健康
+          ═══════════════════════════════════════════ */}
+      <section className="section-card mb-8">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-8 h-8 rounded-lg bg-indigo-100 flex items-center justify-center">
+            <Syringe className="w-4 h-4 text-indigo-600" />
+          </div>
+          <h2 className="text-lg font-bold text-slate-900">國民健康</h2>
+          <span className="text-xs px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-700 font-medium">3 項</span>
+        </div>
+        <div className="grid sm:grid-cols-3 gap-4">
+          {healthIndicators.map((item) => (
+            <div key={item.id} className="p-5 rounded-xl border border-indigo-200 bg-indigo-50 hover:shadow-sm transition-shadow">
+              <p className="text-sm font-semibold text-slate-800 mb-1">{item.name}</p>
+              <p className="text-[10px] text-slate-400 mb-1 truncate">{item.cql}</p>
+              <p className="text-xs text-slate-500 mb-3">{item.description}</p>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <p className="text-xs text-slate-500">{item.countLabel}</p>
+                  <p className="text-lg font-bold text-slate-900">{item.count !== null ? item.count.toLocaleString() : '--'}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-slate-500">{item.rateLabel}</p>
+                  <p className="text-lg font-bold text-slate-900">{item.rate !== null ? `${item.rate}%` : '--'}</p>
                 </div>
               </div>
             </div>
