@@ -1,6 +1,6 @@
 {
-  "exportedAt": "2026-03-25T15:28:09.879Z",
-  "source": "/FHIR-CQL-Quality-Platform-20260204/public-health.html",
+  "exportedAt": "2026-03-25T15:33:09.412Z",
+  "source": "/FHIR-CQL-Quality-Platform-20260204/disease-control.html",
   "diseaseItems": [
     {
       "id": "covid19",
@@ -511,9 +511,9 @@
     "diseaseItems": 5,
     "healthIndicators": 3,
     "esgIndicators": 3,
-    "lastUpdated": "2026-03-25T15:28:09.879Z",
+    "lastUpdated": "2026-03-25T15:33:09.417Z",
     "queriedQuality": 4,
-    "queriedDisease": 0,
+    "queriedDisease": 5,
     "queriedHealth": 3,
     "queriedESG": 0
   }
