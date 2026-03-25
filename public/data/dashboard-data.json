@@ -1,0 +1,42 @@
+{
+  "exportedAt": "2026-03-25T13:04:21.117Z",
+  "source": "/FHIR-CQL-Quality-Platform-20260204/quality-indicators.html",
+  "diseaseTrendData": null,
+  "qualityIndicators": null,
+  "esgIndicators": null,
+  "qualityBarData": null,
+  "diseaseTableData": null,
+  "stats": {
+    "diseases": 9,
+    "qualityMetrics": 20,
+    "updateFrequency": "每日",
+    "hospitals": 6,
+    "lastUpdated": "2026-03-25T13:04:21.117Z"
+  },
+  "announcements": [
+    {
+      "date": "2026/03/25",
+      "title": "控制台數據已更新至民眾版",
+      "category": "數據更新",
+      "badge": "new"
+    },
+    {
+      "date": "2026/03/20",
+      "title": "即時數據連結已啟用",
+      "category": "功能更新",
+      "badge": "feature"
+    },
+    {
+      "date": "2026/03/15",
+      "title": "醫療品質指標報告已發布",
+      "category": "報告發布",
+      "badge": "report"
+    },
+    {
+      "date": "2026/03/10",
+      "title": "AI 健康趨勢分析即將上線",
+      "category": "即將推出",
+      "badge": "upcoming"
+    }
+  ]
+}
