@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import {
   Activity, ShieldCheck, TrendingUp, Building2,
@@ -9,9 +10,14 @@ import {
 import { StatCard } from '@/components/stat-card';
 import { DiseaseTrendChart, QualityBarChart } from '@/components/charts';
 import {
-  diseaseTrendData, qualityBarData, qualityIndicators,
-  esgIndicators, announcements, stats,
+  diseaseTrendData as mockDiseaseTrend,
+  qualityBarData as mockQualityBar,
+  qualityIndicators as mockQualityIndicators,
+  esgIndicators as mockEsgIndicators,
+  announcements as mockAnnouncements,
+  stats as mockStats,
 } from '@/lib/mock-data';
+import { loadDashboardData, type DashboardData } from '@/lib/data-loader';
 import { formatNumber } from '@/lib/utils';
 
 const badgeStyles = {
@@ -22,6 +28,26 @@ const badgeStyles = {
 };
 
 export default function HomePage() {
+  const [diseaseTrendData, setDiseaseTrend] = useState(mockDiseaseTrend);
+  const [qualityBarData, setQualityBar] = useState(mockQualityBar);
+  const [qualityIndicators, setQualityIndicators] = useState(mockQualityIndicators);
+  const [esgIndicators, setEsgIndicators] = useState(mockEsgIndicators);
+  const [announcements, setAnnouncements] = useState(mockAnnouncements);
+  const [stats, setStats] = useState(mockStats);
+  const [dataSource, setDataSource] = useState<'mock' | 'real'>('mock');
+
+  useEffect(() => {
+    loadDashboardData().then((d) => {
+      if (d.exportedAt) setDataSource('real');
+      setDiseaseTrend(d.diseaseTrendData);
+      setQualityBar(d.qualityBarData);
+      setQualityIndicators(d.qualityIndicators);
+      setEsgIndicators(d.esgIndicators);
+      setAnnouncements(d.announcements);
+      setStats(d.stats);
+    });
+  }, []);
+
   return (
     <div>
       {/* ─── Hero ─── */}
@@ -35,6 +61,9 @@ export default function HomePage() {
             <div className="inline-flex items-center gap-2 bg-white/15 backdrop-blur-sm px-4 py-1.5 rounded-full text-sm mb-6">
               <Sparkles className="w-4 h-4" />
               <span>即時更新 &middot; 去識別化 &middot; AI 分析</span>
+              {dataSource === 'real' && (
+                <span className="ml-2 px-2 py-0.5 bg-emerald-400/25 rounded-full text-xs font-medium">● 真實數據</span>
+              )}
             </div>
             <h1 className="text-3xl md:text-5xl font-extrabold leading-tight mb-4">
               公共健康數據<br />透明開放平台

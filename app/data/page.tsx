@@ -1,21 +1,34 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Search, Download, TrendingUp, TrendingDown, Minus,
   Filter, Calendar, ChevronDown,
 } from 'lucide-react';
 import { DiseaseTrendChart } from '@/components/charts';
-import { diseaseTrendData, diseaseTableData } from '@/lib/mock-data';
+import {
+  diseaseTrendData as mockDiseaseTrend,
+  diseaseTableData as mockDiseaseTable,
+} from '@/lib/mock-data';
+import { loadDashboardData } from '@/lib/data-loader';
 import { formatNumber, cn } from '@/lib/utils';
 
 const timeRanges = ['近 3 個月', '近 6 個月', '近 9 個月', '近 1 年'];
 
 export default function DataPage() {
+  const [diseaseTrendData, setDiseaseTrend] = useState(mockDiseaseTrend);
+  const [diseaseTableData, setDiseaseTable] = useState(mockDiseaseTable);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedRange, setSelectedRange] = useState('近 9 個月');
   const [sortField, setSortField] = useState<'disease' | 'thisMonth' | 'change'>('thisMonth');
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc');
+
+  useEffect(() => {
+    loadDashboardData().then((d) => {
+      setDiseaseTrend(d.diseaseTrendData);
+      setDiseaseTable(d.diseaseTableData);
+    });
+  }, []);
 
   const filtered = diseaseTableData
     .filter((d) => d.disease.toLowerCase().includes(searchTerm.toLowerCase()))
