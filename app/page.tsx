@@ -206,7 +206,7 @@ export default function HomePage() {
                   </div>
                   <div>
                     <p className="text-xs text-slate-500">{item.rateLabel}</p>
-                    <p className="text-xl font-bold text-slate-900">{item.rate !== null ? `${item.rate}%` : '--'}</p>
+                    <p className="text-xl font-bold text-slate-900">{item.rate !== null ? `${item.rate}${item.rateUnit || '%'}` : '--'}</p>
                   </div>
                 </div>
               </div>
