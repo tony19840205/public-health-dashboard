@@ -1,5 +1,5 @@
 {
-  "exportedAt": "2026-03-25T14:55:40.795Z",
+  "exportedAt": "2026-03-25T14:56:49.000Z",
   "source": "/FHIR-CQL-Quality-Platform-20260204/esg-indicators.html",
   "diseaseItems": [
     {
@@ -510,7 +510,7 @@
     "qualityIndicators": 39,
     "diseaseItems": 5,
     "esgIndicators": 3,
-    "lastUpdated": "2026-03-25T14:55:40.796Z",
+    "lastUpdated": "2026-03-25T14:56:49.002Z",
     "queriedQuality": 0,
     "queriedDisease": 0,
     "queriedESG": 3
