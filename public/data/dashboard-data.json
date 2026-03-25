@@ -1,42 +1,486 @@
 {
-  "exportedAt": "2026-03-25T13:04:21.117Z",
-  "source": "/FHIR-CQL-Quality-Platform-20260204/quality-indicators.html",
-  "diseaseTrendData": null,
-  "qualityIndicators": null,
-  "esgIndicators": null,
-  "qualityBarData": null,
-  "diseaseTableData": null,
-  "stats": {
-    "diseases": 9,
-    "qualityMetrics": 20,
-    "updateFrequency": "每日",
-    "hospitals": 6,
-    "lastUpdated": "2026-03-25T13:04:21.117Z"
-  },
-  "announcements": [
+  "exportedAt": "2026-03-25T14:24:53.345Z",
+  "source": "/FHIR-CQL-Quality-Platform-20260204/disease-control.html",
+  "diseaseItems": [
     {
-      "date": "2026/03/25",
-      "title": "控制台數據已更新至民眾版",
-      "category": "數據更新",
-      "badge": "new"
+      "id": "covid19",
+      "name": "COVID-19",
+      "cql": "InfectiousDisease_COVID19_Surveillance",
+      "patients": null,
+      "encounters": null
     },
     {
-      "date": "2026/03/20",
-      "title": "即時數據連結已啟用",
-      "category": "功能更新",
-      "badge": "feature"
+      "id": "influenza",
+      "name": "流感",
+      "cql": "InfectiousDisease_Influenza_Surveillance",
+      "patients": null,
+      "encounters": null
     },
     {
-      "date": "2026/03/15",
-      "title": "醫療品質指標報告已發布",
-      "category": "報告發布",
-      "badge": "report"
+      "id": "conjunctivitis",
+      "name": "急性結膜炎",
+      "cql": "InfectiousDisease_AcuteConjunctivitis_Surveillance",
+      "patients": null,
+      "encounters": null
     },
     {
-      "date": "2026/03/10",
-      "title": "AI 健康趨勢分析即將上線",
-      "category": "即將推出",
-      "badge": "upcoming"
+      "id": "enterovirus",
+      "name": "腸病毒",
+      "cql": "InfectiousDisease_Enterovirus_Surveillance",
+      "patients": null,
+      "encounters": null
+    },
+    {
+      "id": "diarrhea",
+      "name": "腹瀉群聚",
+      "cql": "InfectiousDisease_AcuteDiarrhea_Surveillance",
+      "patients": null,
+      "encounters": null
     }
-  ]
+  ],
+  "qualityIndicators": [
+    {
+      "id": "indicator-01",
+      "number": "01",
+      "name": "門診注射劑使用率",
+      "code": "3127",
+      "category": "medication",
+      "numerator": null,
+      "denominator": null,
+      "rate": null,
+      "unit": "%"
+    },
+    {
+      "id": "indicator-02",
+      "number": "02",
+      "name": "門診抗生素使用率",
+      "code": "1140.01",
+      "category": "medication",
+      "numerator": null,
+      "denominator": null,
+      "rate": null,
+      "unit": "%"
+    },
+    {
+      "id": "indicator-03-1",
+      "number": "03-1",
+      "name": "同院降血壓藥重疊",
+      "code": "1710",
+      "category": "medication",
+      "numerator": null,
+      "denominator": null,
+      "rate": null,
+      "unit": "%"
+    },
+    {
+      "id": "indicator-03-2",
+      "number": "03-2",
+      "name": "同院降血脂藥重疊",
+      "code": "1711",
+      "category": "medication",
+      "numerator": null,
+      "denominator": null,
+      "rate": null,
+      "unit": "%"
+    },
+    {
+      "id": "indicator-03-3",
+      "number": "03-3",
+      "name": "同院降血糖藥重疊",
+      "code": "1712",
+      "category": "medication",
+      "numerator": null,
+      "denominator": null,
+      "rate": null,
+      "unit": "%"
+    },
+    {
+      "id": "indicator-03-4",
+      "number": "03-4",
+      "name": "同院抗思覺失調藥重疊",
+      "code": "1726",
+      "category": "medication",
+      "numerator": null,
+      "denominator": null,
+      "rate": null,
+      "unit": "%"
+    },
+    {
+      "id": "indicator-03-5",
+      "number": "03-5",
+      "name": "同院抗憂鬱藥重疊",
+      "code": "1727",
+      "category": "medication",
+      "numerator": null,
+      "denominator": null,
+      "rate": null,
+      "unit": "%"
+    },
+    {
+      "id": "indicator-03-6",
+      "number": "03-6",
+      "name": "同院安眠鎮靜藥重疊",
+      "code": "1728",
+      "category": "medication",
+      "numerator": null,
+      "denominator": null,
+      "rate": null,
+      "unit": "%"
+    },
+    {
+      "id": "indicator-03-7",
+      "number": "03-7",
+      "name": "同院抗血栓藥重疊",
+      "code": "3375",
+      "category": "medication",
+      "numerator": null,
+      "denominator": null,
+      "rate": null,
+      "unit": "%"
+    },
+    {
+      "id": "indicator-03-8",
+      "number": "03-8",
+      "name": "同院前列腺藥重疊",
+      "code": "3376",
+      "category": "medication",
+      "numerator": null,
+      "denominator": null,
+      "rate": null,
+      "unit": "%"
+    },
+    {
+      "id": "indicator-03-9",
+      "number": "03-9",
+      "name": "跨院降血壓藥重疊",
+      "code": "1713",
+      "category": "medication",
+      "numerator": null,
+      "denominator": null,
+      "rate": null,
+      "unit": "%"
+    },
+    {
+      "id": "indicator-03-10",
+      "number": "03-10",
+      "name": "跨院降血脂藥重疊",
+      "code": "1714",
+      "category": "medication",
+      "numerator": null,
+      "denominator": null,
+      "rate": null,
+      "unit": "%"
+    },
+    {
+      "id": "indicator-03-11",
+      "number": "03-11",
+      "name": "跨院降血糖藥重疊",
+      "code": "1715",
+      "category": "medication",
+      "numerator": null,
+      "denominator": null,
+      "rate": null,
+      "unit": "%"
+    },
+    {
+      "id": "indicator-03-12",
+      "number": "03-12",
+      "name": "跨院抗思覺失調藥重疊",
+      "code": "1729",
+      "category": "medication",
+      "numerator": null,
+      "denominator": null,
+      "rate": null,
+      "unit": "%"
+    },
+    {
+      "id": "indicator-03-13",
+      "number": "03-13",
+      "name": "跨院抗憂鬱藥重疊",
+      "code": "1730",
+      "category": "medication",
+      "numerator": null,
+      "denominator": null,
+      "rate": null,
+      "unit": "%"
+    },
+    {
+      "id": "indicator-03-14",
+      "number": "03-14",
+      "name": "跨院安眠鎮靜藥重疊",
+      "code": "1731",
+      "category": "medication",
+      "numerator": null,
+      "denominator": null,
+      "rate": null,
+      "unit": "%"
+    },
+    {
+      "id": "indicator-04",
+      "number": "04",
+      "name": "慢性病連續處方箋使用率",
+      "code": "1318",
+      "category": "outpatient",
+      "numerator": null,
+      "denominator": null,
+      "rate": null,
+      "unit": "%"
+    },
+    {
+      "id": "indicator-05",
+      "number": "05",
+      "name": "處方10種以上藥品率",
+      "code": "3128",
+      "category": "outpatient",
+      "numerator": null,
+      "denominator": null,
+      "rate": null,
+      "unit": "%"
+    },
+    {
+      "id": "indicator-06",
+      "number": "06",
+      "name": "小兒氣喘急診率",
+      "code": "1315Q",
+      "category": "outpatient",
+      "numerator": null,
+      "denominator": null,
+      "rate": null,
+      "unit": "%"
+    },
+    {
+      "id": "indicator-07",
+      "number": "07",
+      "name": "糖尿病HbA1c檢驗率",
+      "code": "109.01Q",
+      "category": "outpatient",
+      "numerator": null,
+      "denominator": null,
+      "rate": null,
+      "unit": "%"
+    },
+    {
+      "id": "indicator-08",
+      "number": "08",
+      "name": "同日同院同疾病再就診率",
+      "code": "1322",
+      "category": "outpatient",
+      "numerator": null,
+      "denominator": null,
+      "rate": null,
+      "unit": "%"
+    },
+    {
+      "id": "indicator-09",
+      "number": "09",
+      "name": "14天內非計畫再入院率",
+      "code": "1077.01Q",
+      "category": "inpatient",
+      "numerator": null,
+      "denominator": null,
+      "rate": null,
+      "unit": "%"
+    },
+    {
+      "id": "indicator-10",
+      "number": "10",
+      "name": "出院後3天內急診率",
+      "code": "108.01",
+      "category": "inpatient",
+      "numerator": null,
+      "denominator": null,
+      "rate": null,
+      "unit": "%"
+    },
+    {
+      "id": "indicator-11-1",
+      "number": "11-1",
+      "name": "整體剖腹產率",
+      "code": "1136.01",
+      "category": "inpatient",
+      "numerator": null,
+      "denominator": null,
+      "rate": null,
+      "unit": "%"
+    },
+    {
+      "id": "indicator-11-2",
+      "number": "11-2",
+      "name": "產婦要求剖腹產率",
+      "code": "1137.01",
+      "category": "inpatient",
+      "numerator": null,
+      "denominator": null,
+      "rate": null,
+      "unit": "%"
+    },
+    {
+      "id": "indicator-11-3",
+      "number": "11-3",
+      "name": "有適應症剖腹產率",
+      "code": "1138.01",
+      "category": "inpatient",
+      "numerator": null,
+      "denominator": null,
+      "rate": null,
+      "unit": "%"
+    },
+    {
+      "id": "indicator-11-4",
+      "number": "11-4",
+      "name": "初產婦剖腹產率",
+      "code": "1075.01",
+      "category": "inpatient",
+      "numerator": null,
+      "denominator": null,
+      "rate": null,
+      "unit": "%"
+    },
+    {
+      "id": "indicator-12",
+      "number": "12",
+      "name": "清淨手術抗生素超3天率",
+      "code": "1155",
+      "category": "surgery",
+      "numerator": null,
+      "denominator": null,
+      "rate": null,
+      "unit": "%"
+    },
+    {
+      "id": "indicator-13",
+      "number": "13",
+      "name": "體外震波碎石平均利用次數",
+      "code": "20.01Q",
+      "category": "surgery",
+      "numerator": null,
+      "denominator": null,
+      "rate": null,
+      "unit": "次"
+    },
+    {
+      "id": "indicator-14",
+      "number": "14",
+      "name": "子宮肌瘤術14天再入院率",
+      "code": "473.01",
+      "category": "surgery",
+      "numerator": null,
+      "denominator": null,
+      "rate": null,
+      "unit": "%"
+    },
+    {
+      "id": "indicator-15-1",
+      "number": "15-1",
+      "name": "膝關節置換90天深部感染率",
+      "code": "353.01",
+      "category": "surgery",
+      "numerator": null,
+      "denominator": null,
+      "rate": null,
+      "unit": "%"
+    },
+    {
+      "id": "indicator-15-2",
+      "number": "15-2",
+      "name": "全膝置換90天深部感染率",
+      "code": "3249",
+      "category": "surgery",
+      "numerator": null,
+      "denominator": null,
+      "rate": null,
+      "unit": "%"
+    },
+    {
+      "id": "indicator-15-3",
+      "number": "15-3",
+      "name": "部分膝置換90天深部感染率",
+      "code": "3250",
+      "category": "surgery",
+      "numerator": null,
+      "denominator": null,
+      "rate": null,
+      "unit": "%"
+    },
+    {
+      "id": "indicator-16",
+      "number": "16",
+      "name": "住院手術傷口感染率",
+      "code": "1658Q",
+      "category": "surgery",
+      "numerator": null,
+      "denominator": null,
+      "rate": null,
+      "unit": "%"
+    },
+    {
+      "id": "indicator-19",
+      "number": "19",
+      "name": "清淨手術傷口感染率",
+      "code": "2524Q",
+      "category": "surgery",
+      "numerator": null,
+      "denominator": null,
+      "rate": null,
+      "unit": "%"
+    },
+    {
+      "id": "indicator-17",
+      "number": "17",
+      "name": "急性心肌梗塞死亡率",
+      "code": "1662Q",
+      "category": "outcome",
+      "numerator": null,
+      "denominator": null,
+      "rate": null,
+      "unit": "%"
+    },
+    {
+      "id": "indicator-18",
+      "number": "18",
+      "name": "失智症安寧療護利用率",
+      "code": "2795Q",
+      "category": "outcome",
+      "numerator": null,
+      "denominator": null,
+      "rate": null,
+      "unit": "%"
+    }
+  ],
+  "esgIndicators": [
+    {
+      "id": "antibiotic",
+      "name": "抗生素使用率",
+      "cql": "Antibiotic_Utilization",
+      "count": null,
+      "rate": null,
+      "unit": "%"
+    },
+    {
+      "id": "ehr",
+      "name": "電子病歷採用率",
+      "cql": "EHR_Adoption_Rate",
+      "count": null,
+      "rate": null,
+      "unit": "%"
+    },
+    {
+      "id": "waste",
+      "name": "醫療廢棄物管理",
+      "cql": "Waste",
+      "count": null,
+      "rate": null,
+      "unit": "%"
+    }
+  ],
+  "stats": {
+    "cqlModules": 50,
+    "qualityIndicators": 39,
+    "diseaseItems": 5,
+    "esgIndicators": 3,
+    "lastUpdated": "2026-03-25T14:24:53.346Z",
+    "queriedQuality": 0,
+    "queriedDisease": 0,
+    "queriedESG": 0
+  }
 }
