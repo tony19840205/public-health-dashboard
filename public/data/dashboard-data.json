@@ -1,6 +1,6 @@
 {
-  "exportedAt": "2026-03-25T14:56:49.000Z",
-  "source": "/FHIR-CQL-Quality-Platform-20260204/esg-indicators.html",
+  "exportedAt": "2026-03-25T14:59:28.499Z",
+  "source": "/FHIR-CQL-Quality-Platform-20260204/disease-control.html",
   "diseaseItems": [
     {
       "id": "covid19",
@@ -485,7 +485,7 @@
       "name": "抗生素使用率",
       "cql": "Antibiotic_Utilization",
       "count": null,
-      "rate": 244.74,
+      "rate": null,
       "unit": "%"
     },
     {
@@ -493,7 +493,7 @@
       "name": "電子病歷採用率",
       "cql": "EHR_Adoption_Rate",
       "count": null,
-      "rate": 11.1,
+      "rate": null,
       "unit": "%"
     },
     {
@@ -501,7 +501,7 @@
       "name": "醫療廢棄物管理",
       "cql": "Waste",
       "count": null,
-      "rate": 7.42,
+      "rate": null,
       "unit": "%"
     }
   ],
@@ -510,9 +510,9 @@
     "qualityIndicators": 39,
     "diseaseItems": 5,
     "esgIndicators": 3,
-    "lastUpdated": "2026-03-25T14:56:49.002Z",
+    "lastUpdated": "2026-03-25T14:59:28.500Z",
     "queriedQuality": 0,
-    "queriedDisease": 0,
-    "queriedESG": 3
+    "queriedDisease": 5,
+    "queriedESG": 0
   }
 }
