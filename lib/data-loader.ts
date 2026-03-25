@@ -1,24 +1,29 @@
 /**
  * 數據載入器 — 嘗試讀取控制台匯出的真實數據，
- * 找不到時降級使用內建模擬數據
+ * 找不到時降級使用內建預設結構（值均為 null）
  */
 
-import * as mock from './mock-data';
+import {
+  diseaseItems as defaultDiseaseItems,
+  qualityIndicators as defaultQualityIndicators,
+  esgIndicators as defaultEsgIndicators,
+  stats as defaultStats,
+  type DiseaseItem,
+  type QualityIndicator,
+  type ESGIndicator,
+} from './mock-data';
 
 export interface DashboardData {
   exportedAt?: string;
-  diseaseTrendData: typeof mock.diseaseTrendData;
-  qualityIndicators: typeof mock.qualityIndicators;
-  esgIndicators: typeof mock.esgIndicators;
-  qualityBarData: typeof mock.qualityBarData;
-  diseaseTableData: typeof mock.diseaseTableData;
-  announcements: typeof mock.announcements;
-  stats: typeof mock.stats;
+  diseaseItems: DiseaseItem[];
+  qualityIndicators: QualityIndicator[];
+  esgIndicators: ESGIndicator[];
+  stats: typeof defaultStats;
 }
 
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
 
-/** 取得完整儀表板數據（真實優先，模擬兜底） */
+/** 取得完整儀表板數據（真實優先，預設兜底） */
 export async function loadDashboardData(): Promise<DashboardData> {
   try {
     const res = await fetch(`${basePath}/data/dashboard-data.json`, { cache: 'no-store' });
@@ -27,24 +32,17 @@ export async function loadDashboardData(): Promise<DashboardData> {
 
     return {
       exportedAt: raw.exportedAt,
-      diseaseTrendData: raw.diseaseTrendData ?? mock.diseaseTrendData,
-      qualityIndicators: raw.qualityIndicators ?? mock.qualityIndicators,
-      esgIndicators: raw.esgIndicators ?? mock.esgIndicators,
-      qualityBarData: raw.qualityBarData ?? mock.qualityBarData,
-      diseaseTableData: raw.diseaseTableData ?? mock.diseaseTableData,
-      announcements: raw.announcements ?? mock.announcements,
-      stats: raw.stats ?? mock.stats,
+      diseaseItems: raw.diseaseItems ?? defaultDiseaseItems,
+      qualityIndicators: raw.qualityIndicators ?? defaultQualityIndicators,
+      esgIndicators: raw.esgIndicators ?? defaultEsgIndicators,
+      stats: raw.stats ?? defaultStats,
     };
   } catch {
-    // JSON 不存在或解析失敗 → 使用模擬數據
     return {
-      diseaseTrendData: mock.diseaseTrendData,
-      qualityIndicators: mock.qualityIndicators,
-      esgIndicators: mock.esgIndicators,
-      qualityBarData: mock.qualityBarData,
-      diseaseTableData: mock.diseaseTableData,
-      announcements: mock.announcements,
-      stats: mock.stats,
+      diseaseItems: defaultDiseaseItems,
+      qualityIndicators: defaultQualityIndicators,
+      esgIndicators: defaultEsgIndicators,
+      stats: defaultStats,
     };
   }
 }

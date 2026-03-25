@@ -1,98 +1,129 @@
 // ============================================================
-// 模擬數據 — 正式環境中由控制台匯出去識別化 JSON 取代
+// 去識別化數據模型 — 對應控制台 50 項 CQL 指標
+// 沒有假數據，只有結構定義；數值全部為 null（待查詢）
+// 正式數據由控制台「連線 UI/UX」匯出後填入
 // ============================================================
 
-/** 傳染病月趨勢 */
-export const diseaseTrendData = [
-  { month: '2025/07', covid: 1250, influenza: 3400, dengue: 89, tb: 42 },
-  { month: '2025/08', covid: 980, influenza: 2800, dengue: 156, tb: 38 },
-  { month: '2025/09', covid: 760, influenza: 2100, dengue: 234, tb: 45 },
-  { month: '2025/10', covid: 1120, influenza: 4200, dengue: 178, tb: 41 },
-  { month: '2025/11', covid: 1580, influenza: 5600, dengue: 95, tb: 37 },
-  { month: '2025/12', covid: 2340, influenza: 7800, dengue: 42, tb: 44 },
-  { month: '2026/01', covid: 3100, influenza: 9200, dengue: 18, tb: 39 },
-  { month: '2026/02', covid: 2680, influenza: 6400, dengue: 12, tb: 43 },
-  { month: '2026/03', covid: 1890, influenza: 4100, dengue: 67, tb: 40 },
+// ─── 類型定義 ───
+
+export interface DiseaseItem {
+  id: string;
+  name: string;
+  cql: string;
+  patients: number | null;
+  encounters: number | null;
+}
+
+export interface QualityIndicator {
+  id: string;
+  number: string;
+  name: string;
+  code: string;
+  category: 'medication' | 'outpatient' | 'inpatient' | 'surgery' | 'outcome';
+  numerator: number | null;
+  denominator: number | null;
+  rate: number | null;
+  unit: string;
+}
+
+export interface ESGIndicator {
+  id: string;
+  name: string;
+  cql: string;
+  count: number | null;
+  rate: number | null;
+  unit: string;
+}
+
+// ─── 傳染病管制（5 項 CQL）───
+
+export const diseaseItems: DiseaseItem[] = [
+  { id: 'covid19', name: 'COVID-19', cql: 'InfectiousDisease_COVID19_Surveillance', patients: null, encounters: null },
+  { id: 'influenza', name: '流感', cql: 'InfectiousDisease_Influenza_Surveillance', patients: null, encounters: null },
+  { id: 'conjunctivitis', name: '急性結膜炎', cql: 'InfectiousDisease_AcuteConjunctivitis_Surveillance', patients: null, encounters: null },
+  { id: 'enterovirus', name: '腸病毒', cql: 'InfectiousDisease_Enterovirus_Surveillance', patients: null, encounters: null },
+  { id: 'diarrhea', name: '腹瀉群聚', cql: 'InfectiousDisease_AcuteDiarrhea_Surveillance', patients: null, encounters: null },
 ];
 
-/** 醫療品質指標 */
-export const qualityIndicators = [
-  { name: '剖腹產率', value: 32.5, target: 30.0, unit: '%', status: 'warning' as const },
-  { name: '抗生素使用率', value: 24.8, target: 25.0, unit: '%', status: 'good' as const },
-  { name: '急診轉住院', value: 18.2, target: 20.0, unit: '%', status: 'good' as const },
-  { name: '院內感染率', value: 2.1, target: 2.5, unit: '%', status: 'good' as const },
-  { name: '手術死亡率', value: 0.8, target: 1.0, unit: '%', status: 'good' as const },
-  { name: '再入院率', value: 12.3, target: 10.0, unit: '%', status: 'warning' as const },
-  { name: '門診等候時間', value: 28, target: 30, unit: '分鐘', status: 'good' as const },
-  { name: '病床使用率', value: 85.6, target: 85.0, unit: '%', status: 'warning' as const },
+// ─── 醫療品質指標（39 項 CQL）───
+
+export const qualityIndicators: QualityIndicator[] = [
+  // 用藥安全 (16)
+  { id: 'indicator-01', number: '01', name: '門診注射劑使用率', code: '3127', category: 'medication', numerator: null, denominator: null, rate: null, unit: '%' },
+  { id: 'indicator-02', number: '02', name: '門診抗生素使用率', code: '1140.01', category: 'medication', numerator: null, denominator: null, rate: null, unit: '%' },
+  { id: 'indicator-03-1', number: '03-1', name: '同院降血壓藥重疊', code: '1710', category: 'medication', numerator: null, denominator: null, rate: null, unit: '%' },
+  { id: 'indicator-03-2', number: '03-2', name: '同院降血脂藥重疊', code: '1711', category: 'medication', numerator: null, denominator: null, rate: null, unit: '%' },
+  { id: 'indicator-03-3', number: '03-3', name: '同院降血糖藥重疊', code: '1712', category: 'medication', numerator: null, denominator: null, rate: null, unit: '%' },
+  { id: 'indicator-03-4', number: '03-4', name: '同院抗思覺失調藥重疊', code: '1726', category: 'medication', numerator: null, denominator: null, rate: null, unit: '%' },
+  { id: 'indicator-03-5', number: '03-5', name: '同院抗憂鬱藥重疊', code: '1727', category: 'medication', numerator: null, denominator: null, rate: null, unit: '%' },
+  { id: 'indicator-03-6', number: '03-6', name: '同院安眠鎮靜藥重疊', code: '1728', category: 'medication', numerator: null, denominator: null, rate: null, unit: '%' },
+  { id: 'indicator-03-7', number: '03-7', name: '同院抗血栓藥重疊', code: '3375', category: 'medication', numerator: null, denominator: null, rate: null, unit: '%' },
+  { id: 'indicator-03-8', number: '03-8', name: '同院前列腺藥重疊', code: '3376', category: 'medication', numerator: null, denominator: null, rate: null, unit: '%' },
+  { id: 'indicator-03-9', number: '03-9', name: '跨院降血壓藥重疊', code: '1713', category: 'medication', numerator: null, denominator: null, rate: null, unit: '%' },
+  { id: 'indicator-03-10', number: '03-10', name: '跨院降血脂藥重疊', code: '1714', category: 'medication', numerator: null, denominator: null, rate: null, unit: '%' },
+  { id: 'indicator-03-11', number: '03-11', name: '跨院降血糖藥重疊', code: '1715', category: 'medication', numerator: null, denominator: null, rate: null, unit: '%' },
+  { id: 'indicator-03-12', number: '03-12', name: '跨院抗思覺失調藥重疊', code: '1729', category: 'medication', numerator: null, denominator: null, rate: null, unit: '%' },
+  { id: 'indicator-03-13', number: '03-13', name: '跨院抗憂鬱藥重疊', code: '1730', category: 'medication', numerator: null, denominator: null, rate: null, unit: '%' },
+  { id: 'indicator-03-14', number: '03-14', name: '跨院安眠鎮靜藥重疊', code: '1731', category: 'medication', numerator: null, denominator: null, rate: null, unit: '%' },
+  // 門診品質 (5)
+  { id: 'indicator-04', number: '04', name: '慢性病連續處方箋使用率', code: '1318', category: 'outpatient', numerator: null, denominator: null, rate: null, unit: '%' },
+  { id: 'indicator-05', number: '05', name: '處方10種以上藥品率', code: '3128', category: 'outpatient', numerator: null, denominator: null, rate: null, unit: '%' },
+  { id: 'indicator-06', number: '06', name: '小兒氣喘急診率', code: '1315Q', category: 'outpatient', numerator: null, denominator: null, rate: null, unit: '%' },
+  { id: 'indicator-07', number: '07', name: '糖尿病HbA1c檢驗率', code: '109.01Q', category: 'outpatient', numerator: null, denominator: null, rate: null, unit: '%' },
+  { id: 'indicator-08', number: '08', name: '同日同院同疾病再就診率', code: '1322', category: 'outpatient', numerator: null, denominator: null, rate: null, unit: '%' },
+  // 住院品質 (6)
+  { id: 'indicator-09', number: '09', name: '14天內非計畫再入院率', code: '1077.01Q', category: 'inpatient', numerator: null, denominator: null, rate: null, unit: '%' },
+  { id: 'indicator-10', number: '10', name: '出院後3天內急診率', code: '108.01', category: 'inpatient', numerator: null, denominator: null, rate: null, unit: '%' },
+  { id: 'indicator-11-1', number: '11-1', name: '整體剖腹產率', code: '1136.01', category: 'inpatient', numerator: null, denominator: null, rate: null, unit: '%' },
+  { id: 'indicator-11-2', number: '11-2', name: '產婦要求剖腹產率', code: '1137.01', category: 'inpatient', numerator: null, denominator: null, rate: null, unit: '%' },
+  { id: 'indicator-11-3', number: '11-3', name: '有適應症剖腹產率', code: '1138.01', category: 'inpatient', numerator: null, denominator: null, rate: null, unit: '%' },
+  { id: 'indicator-11-4', number: '11-4', name: '初產婦剖腹產率', code: '1075.01', category: 'inpatient', numerator: null, denominator: null, rate: null, unit: '%' },
+  // 手術品質 (8)
+  { id: 'indicator-12', number: '12', name: '清淨手術抗生素超3天率', code: '1155', category: 'surgery', numerator: null, denominator: null, rate: null, unit: '%' },
+  { id: 'indicator-13', number: '13', name: '體外震波碎石平均利用次數', code: '20.01Q', category: 'surgery', numerator: null, denominator: null, rate: null, unit: '次' },
+  { id: 'indicator-14', number: '14', name: '子宮肌瘤術14天再入院率', code: '473.01', category: 'surgery', numerator: null, denominator: null, rate: null, unit: '%' },
+  { id: 'indicator-15-1', number: '15-1', name: '膝關節置換90天深部感染率', code: '353.01', category: 'surgery', numerator: null, denominator: null, rate: null, unit: '%' },
+  { id: 'indicator-15-2', number: '15-2', name: '全膝置換90天深部感染率', code: '3249', category: 'surgery', numerator: null, denominator: null, rate: null, unit: '%' },
+  { id: 'indicator-15-3', number: '15-3', name: '部分膝置換90天深部感染率', code: '3250', category: 'surgery', numerator: null, denominator: null, rate: null, unit: '%' },
+  { id: 'indicator-16', number: '16', name: '住院手術傷口感染率', code: '1658Q', category: 'surgery', numerator: null, denominator: null, rate: null, unit: '%' },
+  { id: 'indicator-19', number: '19', name: '清淨手術傷口感染率', code: '2524Q', category: 'surgery', numerator: null, denominator: null, rate: null, unit: '%' },
+  // 結果品質 (2)
+  { id: 'indicator-17', number: '17', name: '急性心肌梗塞死亡率', code: '1662Q', category: 'outcome', numerator: null, denominator: null, rate: null, unit: '%' },
+  { id: 'indicator-18', number: '18', name: '失智症安寧療護利用率', code: '2795Q', category: 'outcome', numerator: null, denominator: null, rate: null, unit: '%' },
 ];
 
-/** ESG 指標 */
-export const esgIndicators = [
-  { category: '碳排放量', value: 4250, unit: '噸CO₂e', change: -8.2, trend: 'down' as const },
-  { category: '廢棄物回收率', value: 72.5, unit: '%', change: 3.1, trend: 'up' as const },
-  { category: '綠色採購比', value: 45.8, unit: '%', change: 5.6, trend: 'up' as const },
-  { category: '員工滿意度', value: 78.3, unit: '%', change: 2.4, trend: 'up' as const },
-  { category: '社區服務時數', value: 1250, unit: '小時', change: 12.0, trend: 'up' as const },
-  { category: '能源使用強度', value: 186, unit: 'kWh/m²', change: -4.5, trend: 'down' as const },
+// ─── ESG 永續指標（3 項 CQL）───
+
+export const esgIndicators: ESGIndicator[] = [
+  { id: 'antibiotic', name: '抗生素使用率', cql: 'Antibiotic_Utilization', count: null, rate: null, unit: '%' },
+  { id: 'ehr', name: '電子病歷採用率', cql: 'EHR_Adoption_Rate', count: null, rate: null, unit: '%' },
+  { id: 'waste', name: '醫療廢棄物管理', cql: 'Waste', count: null, rate: null, unit: '%' },
 ];
 
-/** 品質指標柱狀圖數據 */
-export const qualityBarData = [
-  { name: '指標1\n剖腹產', actual: 32.5, target: 30.0 },
-  { name: '指標2\n抗生素', actual: 24.8, target: 25.0 },
-  { name: '指標3\n急診轉住院', actual: 18.2, target: 20.0 },
-  { name: '指標5\n院內感染', actual: 2.1, target: 2.5 },
-  { name: '指標8\n再入院', actual: 12.3, target: 10.0 },
-  { name: '指標15\n等候時間', actual: 28, target: 30 },
-];
+// ─── 統計 ───
 
-/** 最新消息 */
-export const announcements = [
-  {
-    date: '2026/03/25',
-    title: '2026 Q1 流感趨勢報告已更新',
-    category: '數據更新',
-    badge: 'new' as const,
-  },
-  {
-    date: '2026/03/20',
-    title: '新增 ESG 永續指標監測模組',
-    category: '功能更新',
-    badge: 'feature' as const,
-  },
-  {
-    date: '2026/03/15',
-    title: '醫療品質指標 Q4 2025 報告發布',
-    category: '報告發布',
-    badge: 'report' as const,
-  },
-  {
-    date: '2026/03/10',
-    title: 'AI 健康趨勢分析即將上線',
-    category: '即將推出',
-    badge: 'upcoming' as const,
-  },
-];
-
-/** 統計數字 */
 export const stats = {
-  diseases: 9,
-  qualityMetrics: 20,
-  updateFrequency: '每日',
-  hospitals: 6,
-  lastUpdated: '2026-03-25T08:00:00+08:00',
+  cqlModules: 50,
+  qualityIndicators: 39,
+  diseaseItems: 5,
+  esgIndicators: 3,
+  lastUpdated: '',
 };
 
-/** 數據查詢頁面 — 疾病統計表 */
-export const diseaseTableData = [
-  { id: 1, disease: 'COVID-19', thisMonth: 1890, lastMonth: 2680, change: -29.5, severity: 'medium' as const },
-  { id: 2, disease: '流感', thisMonth: 4100, lastMonth: 6400, change: -35.9, severity: 'high' as const },
-  { id: 3, disease: '登革熱', thisMonth: 67, lastMonth: 12, change: 458.3, severity: 'low' as const },
-  { id: 4, disease: '結核病', thisMonth: 40, lastMonth: 43, change: -7.0, severity: 'low' as const },
-  { id: 5, disease: '腸病毒', thisMonth: 520, lastMonth: 380, change: 36.8, severity: 'medium' as const },
-  { id: 6, disease: 'A型肝炎', thisMonth: 15, lastMonth: 18, change: -16.7, severity: 'low' as const },
-  { id: 7, disease: '百日咳', thisMonth: 8, lastMonth: 12, change: -33.3, severity: 'low' as const },
-  { id: 8, disease: '麻疹', thisMonth: 3, lastMonth: 5, change: -40.0, severity: 'low' as const },
-  { id: 9, disease: '日本腦炎', thisMonth: 2, lastMonth: 1, change: 100.0, severity: 'low' as const },
-];
+// ─── 類別名稱對照 ───
+
+export const categoryLabels: Record<string, string> = {
+  medication: '用藥安全',
+  outpatient: '門診品質',
+  inpatient: '住院品質',
+  surgery: '手術品質',
+  outcome: '結果品質',
+};
+
+export const categoryColors: Record<string, string> = {
+  medication: 'emerald',
+  outpatient: 'blue',
+  inpatient: 'violet',
+  surgery: 'amber',
+  outcome: 'rose',
+};
