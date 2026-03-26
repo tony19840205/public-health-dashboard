@@ -12,6 +12,7 @@ export interface DiseaseItem {
   cql: string;
   patients: number | null;
   encounters: number | null;
+  cityData?: Record<string, number>;
 }
 
 export interface QualityIndicator {

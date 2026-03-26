@@ -7,35 +7,110 @@
       "name": "COVID-19",
       "cql": "InfectiousDisease_COVID19_Surveillance",
       "patients": 30,
-      "encounters": 0
+      "encounters": 0,
+      "cityData": {
+        "台北市": 8,
+        "新北市": 6,
+        "桃園市": 3,
+        "新竹市": 2,
+        "基隆市": 1,
+        "台中市": 3,
+        "彰化縣": 1,
+        "南投縣": 1,
+        "台南市": 2,
+        "高雄市": 2,
+        "屏東縣": 0,
+        "花蓮縣": 1,
+        "台東縣": 0
+      }
     },
     {
       "id": "influenza",
       "name": "流感",
       "cql": "InfectiousDisease_Influenza_Surveillance",
       "patients": 33,
-      "encounters": 0
+      "encounters": 0,
+      "cityData": {
+        "台北市": 9,
+        "新北市": 7,
+        "桃園市": 3,
+        "新竹市": 2,
+        "基隆市": 1,
+        "台中市": 4,
+        "彰化縣": 1,
+        "南投縣": 0,
+        "台南市": 2,
+        "高雄市": 3,
+        "屏東縣": 0,
+        "花蓮縣": 1,
+        "台東縣": 0
+      }
     },
     {
       "id": "conjunctivitis",
       "name": "急性結膜炎",
       "cql": "InfectiousDisease_AcuteConjunctivitis_Surveillance",
       "patients": 17,
-      "encounters": 0
+      "encounters": 0,
+      "cityData": {
+        "台北市": 4,
+        "新北市": 3,
+        "桃園市": 2,
+        "新竹市": 1,
+        "基隆市": 0,
+        "台中市": 2,
+        "彰化縣": 1,
+        "南投縣": 0,
+        "台南市": 1,
+        "高雄市": 2,
+        "屏東縣": 0,
+        "花蓮縣": 1,
+        "台東縣": 0
+      }
     },
     {
       "id": "enterovirus",
       "name": "腸病毒",
       "cql": "InfectiousDisease_Enterovirus_Surveillance",
       "patients": 22,
-      "encounters": 0
+      "encounters": 0,
+      "cityData": {
+        "台北市": 5,
+        "新北市": 4,
+        "桃園市": 2,
+        "新竹市": 1,
+        "基隆市": 1,
+        "台中市": 3,
+        "彰化縣": 1,
+        "南投縣": 0,
+        "台南市": 2,
+        "高雄市": 2,
+        "屏東縣": 0,
+        "花蓮縣": 1,
+        "台東縣": 0
+      }
     },
     {
       "id": "diarrhea",
       "name": "腹瀉群聚",
       "cql": "InfectiousDisease_AcuteDiarrhea_Surveillance",
       "patients": 22,
-      "encounters": 0
+      "encounters": 0,
+      "cityData": {
+        "台北市": 5,
+        "新北市": 4,
+        "桃園市": 2,
+        "新竹市": 1,
+        "基隆市": 1,
+        "台中市": 2,
+        "彰化縣": 1,
+        "南投縣": 1,
+        "台南市": 2,
+        "高雄市": 2,
+        "屏東縣": 0,
+        "花蓮縣": 1,
+        "台東縣": 0
+      }
     }
   ],
   "qualityIndicators": [
