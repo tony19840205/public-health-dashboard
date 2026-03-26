@@ -142,24 +142,24 @@ export default function DashboardPage() {
     <div className="fixed inset-0 bg-slate-950 flex flex-col select-none" style={{ fontFamily: "'Inter', 'Noto Sans TC', sans-serif" }}>
 
       {/* ═══ 頂部列 ═══ */}
-      <header className="flex items-center justify-between px-6 py-3 bg-slate-900/80 border-b border-slate-800/60 backdrop-blur-sm shrink-0">
+      <header className="flex items-center justify-between px-6 py-4 bg-slate-900/80 border-b border-slate-800/60 backdrop-blur-sm shrink-0">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center">
-            <Activity className="w-4 h-4 text-white" />
+          <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-blue-500 to-cyan-400 flex items-center justify-center">
+            <Activity className="w-5 h-5 text-white" />
           </div>
           <div>
-            <h1 className="text-sm font-bold text-white leading-tight">公共健康即時看板</h1>
-            <p className="text-[10px] text-slate-500">FHIR CQL Quality Platform · 50 項指標</p>
+            <h1 className="text-base font-bold text-white leading-tight">公共健康即時看板</h1>
+            <p className="text-xs text-slate-500">FHIR CQL Quality Platform · 50 項指標</p>
           </div>
         </div>
 
         {/* 面板指示器 */}
-        <div className="hidden md:flex items-center gap-1">
+        <div className="hidden md:flex items-center gap-1.5">
           {PANELS.map((p, i) => (
             <button
               key={p.id}
               onClick={() => { setPanel(i); setPlaying(false); }}
-              className={`px-2.5 py-1 text-[11px] rounded-full transition-all ${
+              className={`px-3 py-1.5 text-xs rounded-full transition-all ${
                 i === panel
                   ? 'bg-blue-600 text-white font-semibold shadow-lg shadow-blue-600/30'
                   : 'text-slate-400 hover:text-white hover:bg-slate-800'
@@ -171,32 +171,32 @@ export default function DashboardPage() {
         </div>
 
         {/* 時鐘 + 控制 */}
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-4">
           <div className="text-right">
-            <div className="text-sm font-mono font-bold text-cyan-400 tabular-nums">
+            <div className="text-base font-mono font-bold text-cyan-400 tabular-nums">
               {now.toLocaleTimeString('zh-TW', { hour12: false })}
             </div>
-            <div className="text-[10px] text-slate-500">
+            <div className="text-xs text-slate-500">
               {now.toLocaleDateString('zh-TW')}
               {data.exportedAt && <span> · 數據 {new Date(data.exportedAt).toLocaleDateString('zh-TW')}</span>}
             </div>
           </div>
-          <div className="flex gap-1">
+          <div className="flex gap-1.5">
             <button onClick={() => setPanel(p => (p - 1 + PANELS.length) % PANELS.length)}
-              className="p-1.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white transition-colors">
-              <ChevronLeft className="w-4 h-4" />
+              className="p-2 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white transition-colors">
+              <ChevronLeft className="w-5 h-5" />
             </button>
             <button onClick={() => setPlaying(v => !v)}
-              className="p-1.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white transition-colors">
-              {playing ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
+              className="p-2 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white transition-colors">
+              {playing ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
             </button>
             <button onClick={() => setPanel(p => (p + 1) % PANELS.length)}
-              className="p-1.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white transition-colors">
-              <ChevronRight className="w-4 h-4" />
+              className="p-2 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white transition-colors">
+              <ChevronRight className="w-5 h-5" />
             </button>
             <button onClick={toggleFullscreen}
-              className="p-1.5 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white transition-colors">
-              {isFullscreen ? <Minimize className="w-4 h-4" /> : <Maximize className="w-4 h-4" />}
+              className="p-2 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white transition-colors">
+              {isFullscreen ? <Minimize className="w-5 h-5" /> : <Maximize className="w-5 h-5" />}
             </button>
           </div>
         </div>
