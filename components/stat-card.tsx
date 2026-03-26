@@ -43,10 +43,10 @@ export function StatCard({ title, value, subtitle, icon: Icon, variant = 'blue' 
     <div className={cn('rounded-2xl p-5 border card-hover', v.bg, v.border)}>
       <div className="flex items-start justify-between">
         <div>
-          <p className="text-sm font-medium text-slate-600 mb-1">{title}</p>
-          <p className={cn('text-3xl font-bold tracking-tight', v.value)}>{value}</p>
+          <p className="text-base font-medium text-slate-600 mb-1">{title}</p>
+          <p className={cn('text-4xl font-bold tracking-tight', v.value)}>{value}</p>
           {subtitle && (
-            <p className="text-xs text-slate-500 mt-1">{subtitle}</p>
+            <p className="text-sm text-slate-500 mt-1">{subtitle}</p>
           )}
         </div>
         <div className={cn('w-10 h-10 rounded-xl flex items-center justify-center', v.icon)}>

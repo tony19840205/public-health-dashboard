@@ -112,7 +112,7 @@ export default function HomePage() {
             <h1 className="text-3xl md:text-5xl font-extrabold leading-tight mb-4">
               公共健康數據<br />透明開放平台
             </h1>
-            <p className="text-lg md:text-xl text-white/80 mb-8 leading-relaxed">
+            <p className="text-xl md:text-2xl text-white/80 mb-8 leading-relaxed">
               整合 FHIR 醫療標準與 CQL 臨床查詢語言，涵蓋傳染病監控、39 項醫療品質指標與 ESG 永續報告。<br />
               所有資料皆經去識別化處理，保護病患隱私。
             </p>
@@ -150,22 +150,22 @@ export default function HomePage() {
                 <Bug className="w-5 h-5 text-red-600" />
               </div>
               <div>
-                <h2 className="text-xl font-bold text-slate-900">傳染病監控</h2>
-                <p className="text-sm text-slate-500">5 項傳染病 CQL 監測{diseaseQueried > 0 && ` · ${diseaseQueried} 項已查詢`}</p>
+                <h2 className="text-2xl font-bold text-slate-900">傳染病監控</h2>
+                <p className="text-base text-slate-500">5 項傳染病 CQL 監測{diseaseQueried > 0 && ` · ${diseaseQueried} 項已查詢`}</p>
               </div>
             </div>
           </div>
           <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-3">
             {diseaseItems.map((item) => (
               <div key={item.id} className="p-4 rounded-xl border border-slate-200 bg-white hover:border-blue-300 transition-colors">
-                <p className="text-sm font-semibold text-slate-800 mb-2">{item.name}</p>
+                <p className="text-base font-semibold text-slate-800 mb-2">{item.name}</p>
                 <div className="flex items-baseline gap-2">
-                  <span className="text-2xl font-bold text-slate-900">
+                  <span className="text-3xl font-bold text-slate-900">
                     {item.patients !== null ? item.patients : '--'}
                   </span>
-                  <span className="text-xs text-slate-500">病患數</span>
+                  <span className="text-sm text-slate-500">病患數</span>
                 </div>
-                <div className="text-xs text-slate-400 mt-1">
+                <div className="text-sm text-slate-400 mt-1">
                   就診：{item.encounters !== null ? item.encounters : '--'}
                 </div>
               </div>
@@ -183,24 +183,24 @@ export default function HomePage() {
                 <Syringe className="w-5 h-5 text-indigo-600" />
               </div>
               <div>
-                <h2 className="text-xl font-bold text-slate-900">國民健康</h2>
-                <p className="text-sm text-slate-500">疫苗接種與慢性病管理{healthQueried > 0 && ` · ${healthQueried} 項已查詢`}</p>
+                <h2 className="text-2xl font-bold text-slate-900">國民健康</h2>
+                <p className="text-base text-slate-500">疫苗接種與慢性病管理{healthQueried > 0 && ` · ${healthQueried} 項已查詢`}</p>
               </div>
             </div>
           </div>
           <div className="grid sm:grid-cols-3 gap-4">
             {healthIndicators.map((item) => (
               <div key={item.id} className="p-5 rounded-xl border border-indigo-200 bg-indigo-50 hover:shadow-sm transition-shadow">
-                <p className="text-sm font-semibold text-slate-800 mb-1">{item.name}</p>
-                <p className="text-xs text-slate-500 mb-3">{item.description}</p>
+                <p className="text-base font-semibold text-slate-800 mb-1">{item.name}</p>
+                <p className="text-sm text-slate-500 mb-3">{item.description}</p>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <p className="text-xs text-slate-500">{item.countLabel}</p>
-                    <p className="text-xl font-bold text-slate-900">{item.count !== null ? item.count.toLocaleString() : '--'}</p>
+                    <p className="text-sm text-slate-500">{item.countLabel}</p>
+                    <p className="text-2xl font-bold text-slate-900">{item.count !== null ? item.count.toLocaleString() : '--'}</p>
                   </div>
                   <div>
-                    <p className="text-xs text-slate-500">{item.rateLabel}</p>
-                    <p className="text-xl font-bold text-slate-900">{item.rate !== null ? `${item.rate}${item.rateUnit || '%'}` : '--'}</p>
+                    <p className="text-sm text-slate-500">{item.rateLabel}</p>
+                    <p className="text-2xl font-bold text-slate-900">{item.rate !== null ? `${item.rate}${item.rateUnit || '%'}` : '--'}</p>
                   </div>
                 </div>
               </div>
@@ -218,8 +218,8 @@ export default function HomePage() {
                 <BarChart3 className="w-5 h-5 text-blue-600" />
               </div>
               <div>
-                <h2 className="text-xl font-bold text-slate-900">醫療品質指標</h2>
-                <p className="text-sm text-slate-500">39 項指標 · 5 大類別{queriedCount > 0 && ` · ${queriedCount} 項已查詢`}</p>
+                <h2 className="text-2xl font-bold text-slate-900">醫療品質指標</h2>
+                <p className="text-base text-slate-500">39 項指標 · 5 大類別{queriedCount > 0 && ` · ${queriedCount} 項已查詢`}</p>
               </div>
             </div>
             <Link href="/data/" className="text-sm text-blue-600 hover:text-blue-700 font-medium inline-flex items-center gap-1 mt-3 sm:mt-0">
@@ -236,10 +236,10 @@ export default function HomePage() {
                 <div key={cat}>
                   <div className="flex items-center gap-2 mb-3">
                     <Icon className={cn('w-4 h-4', colors.text)} />
-                    <h3 className={cn('text-sm font-bold', colors.text)}>
+                    <h3 className={cn('text-base font-bold', colors.text)}>
                       {categoryLabels[cat]}
                     </h3>
-                    <span className={cn('text-xs px-2 py-0.5 rounded-full font-medium', colors.badge)}>
+                    <span className={cn('text-sm px-2 py-0.5 rounded-full font-medium', colors.badge)}>
                       {indicators.length} 項{queried > 0 && ` · ${queried} 有數據`}
                     </span>
                   </div>
@@ -250,20 +250,20 @@ export default function HomePage() {
                         className={cn('p-3 rounded-xl border', colors.bg, colors.border)}
                       >
                         <div className="flex items-center gap-2 mb-1">
-                          <span className={cn('text-xs font-bold px-1.5 py-0.5 rounded', colors.badge)}>
+                          <span className={cn('text-sm font-bold px-1.5 py-0.5 rounded', colors.badge)}>
                             {ind.number}
                           </span>
-                          <span className="text-xs text-slate-500 truncate">{ind.code}</span>
+                          <span className="text-sm text-slate-500 truncate">{ind.code}</span>
                         </div>
-                        <p className="text-sm font-medium text-slate-800 truncate mb-1">{ind.name}</p>
-                        <span className="text-xl font-bold text-slate-900">
+                        <p className="text-base font-medium text-slate-800 truncate mb-1">{ind.name}</p>
+                        <span className="text-2xl font-bold text-slate-900">
                           {ind.rate !== null ? `${ind.rate}${ind.unit}` : '--'}
                         </span>
                       </div>
                     ))}
                   </div>
                   {indicators.length > 4 && (
-                    <p className="text-xs text-slate-400 mt-1 ml-1">
+                    <p className="text-sm text-slate-400 mt-1 ml-1">
                       還有 {indicators.length - 4} 項指標 →{' '}
                       <Link href="/data/" className="text-blue-500 hover:underline">查看全部</Link>
                     </p>
@@ -283,23 +283,23 @@ export default function HomePage() {
               <Leaf className="w-5 h-5 text-teal-600" />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-slate-900">ESG 永續指標</h2>
-              <p className="text-sm text-slate-500">3 項 CQL 永續指標{esgQueried > 0 && ` · ${esgQueried} 項已查詢`}</p>
+                <h2 className="text-2xl font-bold text-slate-900">ESG 永續指標</h2>
+                <p className="text-base text-slate-500">3 項 CQL 永續指標{esgQueried > 0 && ` · ${esgQueried} 項已查詢`}</p>
             </div>
           </div>
           <div className="grid sm:grid-cols-3 gap-4">
             {esgIndicators.map((item) => (
               <div key={item.id} className="p-5 rounded-xl border border-teal-200 bg-teal-50 hover:shadow-sm transition-shadow">
-                <p className="text-sm font-semibold text-slate-800 mb-1">{item.name}</p>
-                <p className="text-xs text-slate-500 mb-3">{item.description}</p>
+                <p className="text-base font-semibold text-slate-800 mb-1">{item.name}</p>
+                <p className="text-sm text-slate-500 mb-3">{item.description}</p>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <p className="text-xs text-slate-500">{item.countLabel}</p>
-                    <p className="text-xl font-bold text-slate-900">{item.count !== null ? item.count.toLocaleString() : '--'}</p>
+                    <p className="text-sm text-slate-500">{item.countLabel}</p>
+                    <p className="text-2xl font-bold text-slate-900">{item.count !== null ? item.count.toLocaleString() : '--'}</p>
                   </div>
                   <div>
-                    <p className="text-xs text-slate-500">{item.rateLabel}</p>
-                    <p className="text-xl font-bold text-slate-900">{item.rate !== null ? `${item.rate}${item.unit}` : '--'}</p>
+                    <p className="text-sm text-slate-500">{item.rateLabel}</p>
+                    <p className="text-2xl font-bold text-slate-900">{item.rate !== null ? `${item.rate}${item.unit}` : '--'}</p>
                   </div>
                 </div>
               </div>

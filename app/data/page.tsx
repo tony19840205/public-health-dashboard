@@ -65,7 +65,10 @@ export default function DataPage() {
     return matchCat && matchSearch;
   });
 
-  const queriedCount = qualityIndicators.filter(i => i.rate !== null).length;
+  const queriedCount = qualityIndicators.filter(i => i.rate !== null).length
+    + diseaseItems.filter(i => i.patients !== null).length
+    + healthIndicators.filter(i => i.count !== null).length
+    + esgIndicators.filter(i => i.rate !== null).length;
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
@@ -81,10 +84,12 @@ export default function DataPage() {
 
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-2xl md:text-3xl font-bold text-slate-900">數據查詢</h1>
-        <p className="text-slate-500 mt-1">
+        <h1 className="text-3xl md:text-4xl font-bold text-slate-900">數據查詢</h1>
+        <p className="text-base text-slate-500 mt-1">
           50 項 CQL 指標 · 39 醫療品質 · 5 傳染病 · 3 國民健康 · 3 ESG
-          {queriedCount > 0 && <span className="text-emerald-600 font-medium"> · {queriedCount} 項已有數據</span>}
+          {queriedCount >= 50
+            ? <span className="text-emerald-600 font-medium"> · 50 項皆有數據</span>
+            : queriedCount > 0 && <span className="text-emerald-600 font-medium"> · {queriedCount} 項已有數據</span>}
         </p>
       </div>
 
@@ -96,22 +101,22 @@ export default function DataPage() {
           <div className="w-8 h-8 rounded-lg bg-red-100 flex items-center justify-center">
             <Bug className="w-4 h-4 text-red-600" />
           </div>
-          <h2 className="text-lg font-bold text-slate-900">傳染病監控</h2>
-          <span className="text-xs px-2 py-0.5 rounded-full bg-red-100 text-red-700 font-medium">5 項</span>
+          <h2 className="text-xl font-bold text-slate-900">傳染病監控</h2>
+          <span className="text-sm px-2 py-0.5 rounded-full bg-red-100 text-red-700 font-medium">5 項</span>
         </div>
         <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-3">
           {diseaseItems.map((item) => (
             <div key={item.id} className="p-4 rounded-xl border border-slate-200 bg-white hover:shadow-sm transition-shadow">
-              <p className="text-sm font-semibold text-slate-800 mb-1">{item.name}</p>
-              <p className="text-[10px] text-slate-400 mb-2 truncate">{item.cql}</p>
+              <p className="text-base font-semibold text-slate-800 mb-1">{item.name}</p>
+              <p className="text-xs text-slate-400 mb-2 truncate">{item.cql}</p>
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <p className="text-xs text-slate-500">病患數</p>
-                  <p className="text-lg font-bold text-slate-900">{item.patients !== null ? item.patients : '--'}</p>
+                  <p className="text-sm text-slate-500">病患數</p>
+                  <p className="text-xl font-bold text-slate-900">{item.patients !== null ? item.patients : '--'}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-slate-500">就診數</p>
-                  <p className="text-lg font-bold text-slate-900">{item.encounters !== null ? item.encounters : '--'}</p>
+                  <p className="text-sm text-slate-500">就診數</p>
+                  <p className="text-xl font-bold text-slate-900">{item.encounters !== null ? item.encounters : '--'}</p>
                 </div>
               </div>
             </div>
@@ -127,23 +132,23 @@ export default function DataPage() {
           <div className="w-8 h-8 rounded-lg bg-indigo-100 flex items-center justify-center">
             <Syringe className="w-4 h-4 text-indigo-600" />
           </div>
-          <h2 className="text-lg font-bold text-slate-900">國民健康</h2>
-          <span className="text-xs px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-700 font-medium">3 項</span>
+          <h2 className="text-xl font-bold text-slate-900">國民健康</h2>
+          <span className="text-sm px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-700 font-medium">3 項</span>
         </div>
         <div className="grid sm:grid-cols-3 gap-4">
           {healthIndicators.map((item) => (
             <div key={item.id} className="p-5 rounded-xl border border-indigo-200 bg-indigo-50 hover:shadow-sm transition-shadow">
-              <p className="text-sm font-semibold text-slate-800 mb-1">{item.name}</p>
-              <p className="text-[10px] text-slate-400 mb-1 truncate">{item.cql}</p>
-              <p className="text-xs text-slate-500 mb-3">{item.description}</p>
+              <p className="text-base font-semibold text-slate-800 mb-1">{item.name}</p>
+              <p className="text-xs text-slate-400 mb-1 truncate">{item.cql}</p>
+              <p className="text-sm text-slate-500 mb-3">{item.description}</p>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <p className="text-xs text-slate-500">{item.countLabel}</p>
-                  <p className="text-lg font-bold text-slate-900">{item.count !== null ? item.count.toLocaleString() : '--'}</p>
+                  <p className="text-sm text-slate-500">{item.countLabel}</p>
+                  <p className="text-xl font-bold text-slate-900">{item.count !== null ? item.count.toLocaleString() : '--'}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-slate-500">{item.rateLabel}</p>
-                  <p className="text-lg font-bold text-slate-900">{item.rate !== null ? `${item.rate}${item.rateUnit || '%'}` : '--'}</p>
+                  <p className="text-sm text-slate-500">{item.rateLabel}</p>
+                  <p className="text-xl font-bold text-slate-900">{item.rate !== null ? `${item.rate}${item.rateUnit || '%'}` : '--'}</p>
                 </div>
               </div>
             </div>
@@ -160,8 +165,8 @@ export default function DataPage() {
             <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center">
               <Activity className="w-4 h-4 text-blue-600" />
             </div>
-            <h2 className="text-lg font-bold text-slate-900">醫療品質指標</h2>
-            <span className="text-xs px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 font-medium">39 項</span>
+            <h2 className="text-xl font-bold text-slate-900">醫療品質指標</h2>
+            <span className="text-sm px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 font-medium">39 項</span>
           </div>
         </div>
 
@@ -174,7 +179,7 @@ export default function DataPage() {
               placeholder="搜尋指標名稱、編號或代碼..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 bg-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all"
+              className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-slate-200 bg-white text-base focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-400 transition-all"
             />
           </div>
           <div className="flex flex-wrap gap-2">
@@ -217,31 +222,31 @@ export default function DataPage() {
                 className={cn('p-4 rounded-xl border transition-shadow hover:shadow-sm', colors.bg, colors.border)}
               >
                 <div className="flex items-center gap-2 mb-2">
-                  <span className={cn('text-xs font-bold px-2 py-0.5 rounded', colors.badge)}>
+                  <span className={cn('text-sm font-bold px-2 py-0.5 rounded', colors.badge)}>
                     {ind.number}
                   </span>
-                  <span className="text-xs text-slate-500">{ind.code}</span>
-                  <span className={cn('text-[10px] px-1.5 py-0.5 rounded-full ml-auto', colors.badge)}>
+                  <span className="text-sm text-slate-500">{ind.code}</span>
+                  <span className={cn('text-xs px-1.5 py-0.5 rounded-full ml-auto', colors.badge)}>
                     {categoryLabels[ind.category]}
                   </span>
                 </div>
-                <p className="text-sm font-medium text-slate-800 mb-3">{ind.name}</p>
+                <p className="text-base font-medium text-slate-800 mb-3">{ind.name}</p>
                 <div className="grid grid-cols-3 gap-2 text-center">
                   <div>
-                    <p className="text-[10px] text-slate-500 mb-0.5">分子</p>
-                    <p className="text-sm font-bold text-slate-900">
+                    <p className="text-xs text-slate-500 mb-0.5">分子</p>
+                    <p className="text-base font-bold text-slate-900">
                       {ind.numerator !== null ? ind.numerator.toLocaleString() : '--'}
                     </p>
                   </div>
                   <div>
-                    <p className="text-[10px] text-slate-500 mb-0.5">分母</p>
-                    <p className="text-sm font-bold text-slate-900">
+                    <p className="text-xs text-slate-500 mb-0.5">分母</p>
+                    <p className="text-base font-bold text-slate-900">
                       {ind.denominator !== null ? ind.denominator.toLocaleString() : '--'}
                     </p>
                   </div>
                   <div>
-                    <p className="text-[10px] text-slate-500 mb-0.5">比率</p>
-                    <p className="text-lg font-bold text-slate-900">
+                    <p className="text-xs text-slate-500 mb-0.5">比率</p>
+                    <p className="text-xl font-bold text-slate-900">
                       {ind.rate !== null ? `${ind.rate}${ind.unit}` : '--'}
                     </p>
                   </div>
@@ -267,23 +272,23 @@ export default function DataPage() {
           <div className="w-8 h-8 rounded-lg bg-teal-100 flex items-center justify-center">
             <Leaf className="w-4 h-4 text-teal-600" />
           </div>
-          <h2 className="text-lg font-bold text-slate-900">ESG 永續指標</h2>
-          <span className="text-xs px-2 py-0.5 rounded-full bg-teal-100 text-teal-700 font-medium">3 項</span>
+          <h2 className="text-xl font-bold text-slate-900">ESG 永續指標</h2>
+          <span className="text-sm px-2 py-0.5 rounded-full bg-teal-100 text-teal-700 font-medium">3 項</span>
         </div>
         <div className="grid sm:grid-cols-3 gap-4">
           {esgIndicators.map((item) => (
             <div key={item.id} className="p-5 rounded-xl border border-teal-200 bg-teal-50 hover:shadow-sm transition-shadow">
-              <p className="text-sm font-semibold text-slate-800 mb-1">{item.name}</p>
-              <p className="text-[10px] text-slate-400 mb-1 truncate">{item.cql}</p>
-              <p className="text-xs text-slate-500 mb-3">{item.description}</p>
+              <p className="text-base font-semibold text-slate-800 mb-1">{item.name}</p>
+              <p className="text-xs text-slate-400 mb-1 truncate">{item.cql}</p>
+              <p className="text-sm text-slate-500 mb-3">{item.description}</p>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <p className="text-xs text-slate-500">{item.countLabel}</p>
-                  <p className="text-lg font-bold text-slate-900">{item.count !== null ? item.count.toLocaleString() : '--'}</p>
+                  <p className="text-sm text-slate-500">{item.countLabel}</p>
+                  <p className="text-xl font-bold text-slate-900">{item.count !== null ? item.count.toLocaleString() : '--'}</p>
                 </div>
                 <div>
-                  <p className="text-xs text-slate-500">{item.rateLabel}</p>
-                  <p className="text-lg font-bold text-slate-900">{item.rate !== null ? `${item.rate}${item.unit}` : '--'}</p>
+                  <p className="text-sm text-slate-500">{item.rateLabel}</p>
+                  <p className="text-xl font-bold text-slate-900">{item.rate !== null ? `${item.rate}${item.unit}` : '--'}</p>
                 </div>
               </div>
             </div>
