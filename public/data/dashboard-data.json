@@ -7,35 +7,35 @@
       "name": "COVID-19",
       "cql": "InfectiousDisease_COVID19_Surveillance",
       "patients": 30,
-      "encounters": null
+      "encounters": 0
     },
     {
       "id": "influenza",
       "name": "流感",
       "cql": "InfectiousDisease_Influenza_Surveillance",
       "patients": 33,
-      "encounters": null
+      "encounters": 0
     },
     {
       "id": "conjunctivitis",
       "name": "急性結膜炎",
       "cql": "InfectiousDisease_AcuteConjunctivitis_Surveillance",
       "patients": 17,
-      "encounters": null
+      "encounters": 0
     },
     {
       "id": "enterovirus",
       "name": "腸病毒",
       "cql": "InfectiousDisease_Enterovirus_Surveillance",
       "patients": 22,
-      "encounters": null
+      "encounters": 0
     },
     {
       "id": "diarrhea",
       "name": "腹瀉群聚",
       "cql": "InfectiousDisease_AcuteDiarrhea_Surveillance",
       "patients": 22,
-      "encounters": null
+      "encounters": 0
     }
   ],
   "qualityIndicators": [
