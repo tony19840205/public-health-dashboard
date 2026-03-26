@@ -2,13 +2,14 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Activity, BarChart3, Info, Menu, X } from 'lucide-react';
+import { Activity, BarChart3, Info, Menu, X, Monitor } from 'lucide-react';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
 
 const navLinks = [
   { href: '/', label: '首頁', icon: Activity },
   { href: '/data/', label: '數據查詢', icon: BarChart3 },
+  { href: '/dashboard/', label: '即時看板', icon: Monitor, isSpecial: true },
   { href: '/about/', label: '關於', icon: Info },
 ];
 
@@ -33,7 +34,7 @@ export function Navbar() {
 
           {/* Desktop nav */}
           <div className="hidden md:flex items-center gap-1">
-            {navLinks.map(({ href, label, icon: Icon }) => {
+            {navLinks.map(({ href, label, icon: Icon, isSpecial }) => {
               const isActive = pathname === href || pathname === href.slice(0, -1);
               return (
                 <Link
@@ -41,9 +42,11 @@ export function Navbar() {
                   href={href}
                   className={cn(
                     'flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all',
-                    isActive
-                      ? 'bg-blue-50 text-blue-700 shadow-sm'
-                      : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                    isSpecial && !isActive
+                      ? 'bg-gradient-to-r from-violet-600 to-blue-600 text-white shadow-md shadow-violet-500/25 hover:shadow-lg hover:shadow-violet-500/40'
+                      : isActive
+                        ? 'bg-blue-50 text-blue-700 shadow-sm'
+                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
                   )}
                 >
                   <Icon className="w-4 h-4" />
@@ -66,7 +69,7 @@ export function Navbar() {
         {/* Mobile nav */}
         {mobileOpen && (
           <div className="md:hidden pb-4 border-t border-slate-100 pt-3">
-            {navLinks.map(({ href, label, icon: Icon }) => {
+            {navLinks.map(({ href, label, icon: Icon, isSpecial }) => {
               const isActive = pathname === href || pathname === href.slice(0, -1);
               return (
                 <Link
@@ -75,9 +78,11 @@ export function Navbar() {
                   onClick={() => setMobileOpen(false)}
                   className={cn(
                     'flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-all',
-                    isActive
-                      ? 'bg-blue-50 text-blue-700'
-                      : 'text-slate-600 hover:bg-slate-50'
+                    isSpecial && !isActive
+                      ? 'bg-gradient-to-r from-violet-600 to-blue-600 text-white shadow-md'
+                      : isActive
+                        ? 'bg-blue-50 text-blue-700'
+                        : 'text-slate-600 hover:bg-slate-50'
                   )}
                 >
                   <Icon className="w-4 h-4" />
