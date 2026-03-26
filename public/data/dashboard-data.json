@@ -1,6 +1,6 @@
 {
-  "exportedAt": "2026-03-26T01:24:50.657Z",
-  "source": "/FHIR-CQL-Quality-Platform-20260204/quality-indicators.html",
+  "exportedAt": "2026-03-26T04:53:17.217Z",
+  "source": "/FHIR-CQL-Quality-Platform-20260204/esg-indicators.html",
   "diseaseItems": [
     {
       "id": "covid19",
@@ -484,25 +484,34 @@
       "id": "antibiotic",
       "name": "抗生素使用率",
       "cql": "Antibiotic_Utilization",
-      "count": null,
+      "description": "監測抗生素合理使用與抗藥性管理 (國際算法)",
+      "count": 38,
       "rate": 244.74,
-      "unit": "%"
+      "unit": "%",
+      "countLabel": "病人數",
+      "rateLabel": "使用率"
     },
     {
       "id": "ehr",
       "name": "電子病歷採用率",
       "cql": "EHR_Adoption_Rate",
-      "count": null,
+      "description": "追蹤病歷資料是否以結構化電子格式完整記錄",
+      "count": 111,
       "rate": 11.1,
-      "unit": "%"
+      "unit": "%",
+      "countLabel": "病人數",
+      "rateLabel": "採用率"
     },
     {
       "id": "waste",
       "name": "醫療廢棄物管理",
       "cql": "Waste",
-      "count": null,
+      "description": "監測醫療廢棄物產生與處理情況",
+      "count": 142.8,
       "rate": 7.42,
-      "unit": "%"
+      "unit": "%",
+      "countLabel": "廢棄物量",
+      "rateLabel": "回收率"
     }
   ],
   "stats": {
@@ -511,7 +520,7 @@
     "diseaseItems": 5,
     "healthIndicators": 3,
     "esgIndicators": 3,
-    "lastUpdated": "2026-03-26T01:24:50.658Z",
+    "lastUpdated": "2026-03-26T04:53:17.218Z",
     "queriedQuality": 39,
     "queriedDisease": 5,
     "queriedHealth": 3,
