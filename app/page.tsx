@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import {
   Activity, ShieldCheck, TrendingUp, Building2,
-  BarChart3, MessageSquare, ArrowRight,
+  BarChart3, ArrowRight,
   Sparkles, AlertTriangle, Pill, Stethoscope,
   BedDouble, Scissors, HeartPulse, Leaf, Bug, Syringe, Heart,
 } from 'lucide-react';
@@ -124,13 +124,7 @@ export default function HomePage() {
                 <BarChart3 className="w-5 h-5" />
                 瀏覽指標數據
               </Link>
-              <Link
-                href="/ai-chat/"
-                className="inline-flex items-center gap-2 bg-white/15 backdrop-blur-sm text-white font-semibold px-6 py-3 rounded-xl hover:bg-white/25 transition-colors border border-white/30"
-              >
-                <MessageSquare className="w-5 h-5" />
-                AI 健康問答
-              </Link>
+
             </div>
           </div>
         </div>
@@ -314,28 +308,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ─── AI promo ─── */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8 mb-16">
-        <div className="rounded-2xl bg-gradient-to-br from-violet-600 to-blue-600 p-8 text-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
-          <div className="flex items-start gap-4">
-            <div className="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center shrink-0">
-              <MessageSquare className="w-6 h-6" />
-            </div>
-            <div>
-              <h3 className="text-xl font-bold mb-1">AI 健康問答</h3>
-              <p className="text-white/80 text-sm leading-relaxed">
-                輸入健康相關問題，AI 將根據最新的公開統計數據為您分析趨勢、提供衛教資訊。
-              </p>
-            </div>
-          </div>
-          <Link
-            href="/ai-chat/"
-            className="inline-flex items-center gap-2 bg-white text-violet-700 font-semibold px-5 py-2.5 rounded-xl hover:bg-violet-50 transition-colors shrink-0"
-          >
-            開始提問 <ArrowRight className="w-4 h-4" />
-          </Link>
-        </div>
-      </section>
+
     </div>
   );
 }

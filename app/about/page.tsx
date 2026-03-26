@@ -1,6 +1,6 @@
 import {
   ShieldCheck, Database, Eye, Lock,
-  Server, Brain, FileText, Heart,
+  Server, FileText, Heart,
 } from 'lucide-react';
 
 export default function AboutPage() {
@@ -47,11 +47,7 @@ export default function AboutPage() {
               title: '即時透明',
               desc: '數據每日更新，民眾可即時掌握最新公共健康動態。'
             },
-            {
-              icon: Brain,
-              title: 'AI 智慧分析',
-              desc: '整合大型語言模型，提供趨勢分析與健康資訊問答服務。'
-            },
+
             {
               icon: Lock,
               title: '隱私保護',

@@ -24,7 +24,6 @@ export function Footer() {
             <h4 className="font-semibold text-slate-900 mb-3 text-sm">快速連結</h4>
             <ul className="space-y-2 text-sm text-slate-500">
               <li><a href="/data/" className="hover:text-blue-600 transition-colors">數據查詢</a></li>
-              <li><a href="/ai-chat/" className="hover:text-blue-600 transition-colors">AI 健康問答</a></li>
               <li><a href="/about/" className="hover:text-blue-600 transition-colors">關於平台</a></li>
             </ul>
           </div>

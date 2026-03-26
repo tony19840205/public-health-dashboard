@@ -2,14 +2,13 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Activity, BarChart3, MessageSquare, Info, Menu, X } from 'lucide-react';
+import { Activity, BarChart3, Info, Menu, X } from 'lucide-react';
 import { useState } from 'react';
 import { cn } from '@/lib/utils';
 
 const navLinks = [
   { href: '/', label: '首頁', icon: Activity },
   { href: '/data/', label: '數據查詢', icon: BarChart3 },
-  { href: '/ai-chat/', label: 'AI 問答', icon: MessageSquare },
   { href: '/about/', label: '關於', icon: Info },
 ];
 
