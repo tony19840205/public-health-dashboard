@@ -1,40 +1,40 @@
 {
-  "exportedAt": "2026-03-25T15:40:14.502Z",
-  "source": "/FHIR-CQL-Quality-Platform-20260204/esg-indicators.html",
+  "exportedAt": "2026-03-26T00:51:13.006Z",
+  "source": "/FHIR-CQL-Quality-Platform-20260204/disease-control.html",
   "diseaseItems": [
     {
       "id": "covid19",
       "name": "COVID-19",
       "cql": "InfectiousDisease_COVID19_Surveillance",
-      "patients": null,
+      "patients": 30,
       "encounters": null
     },
     {
       "id": "influenza",
       "name": "流感",
       "cql": "InfectiousDisease_Influenza_Surveillance",
-      "patients": null,
+      "patients": 33,
       "encounters": null
     },
     {
       "id": "conjunctivitis",
       "name": "急性結膜炎",
       "cql": "InfectiousDisease_AcuteConjunctivitis_Surveillance",
-      "patients": null,
+      "patients": 17,
       "encounters": null
     },
     {
       "id": "enterovirus",
       "name": "腸病毒",
       "cql": "InfectiousDisease_Enterovirus_Surveillance",
-      "patients": null,
+      "patients": 22,
       "encounters": null
     },
     {
       "id": "diarrhea",
       "name": "腹瀉群聚",
       "cql": "InfectiousDisease_AcuteDiarrhea_Surveillance",
-      "patients": null,
+      "patients": 22,
       "encounters": null
     }
   ],
@@ -511,7 +511,7 @@
     "diseaseItems": 5,
     "healthIndicators": 3,
     "esgIndicators": 3,
-    "lastUpdated": "2026-03-25T15:40:14.503Z",
+    "lastUpdated": "2026-03-26T00:51:13.007Z",
     "queriedQuality": 4,
     "queriedDisease": 5,
     "queriedHealth": 3,
