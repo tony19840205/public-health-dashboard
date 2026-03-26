@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useCallback } from 'react';
+import dynamic from 'next/dynamic';
 import {
   Bug, Pill, Stethoscope, BedDouble, Scissors, HeartPulse,
   Leaf, Syringe, Heart, Activity, ChevronLeft, ChevronRight,
@@ -12,6 +13,8 @@ import {
   type HealthIndicator, type ESGIndicator,
   categoryLabels,
 } from '@/lib/mock-data';
+
+const DiseaseMapLeaflet = dynamic(() => import('@/components/disease-map-leaflet'), { ssr: false });
 
 /* ─── 燈號閾值（品質指標 rate 越低越好的類型） ─── */
 const THRESHOLDS: Record<string, { green: number; yellow: number }> = {
@@ -437,16 +440,6 @@ function DiseasePanel({ items }: { items: DiseaseItem[] }) {
 }
 
 /* ─── 傳染病地圖面板 ─── */
-const CITY_COORDS: Record<string, [number, number]> = {
-  '台北市': [25.0330, 121.5654], '新北市': [25.0116, 121.4648],
-  '桃園市': [24.9936, 121.3010], '新竹市': [24.8138, 120.9675],
-  '基隆市': [25.1276, 121.7392], '台中市': [24.1477, 120.6736],
-  '彰化縣': [24.0518, 120.5161], '南投縣': [23.9609, 120.9719],
-  '台南市': [22.9998, 120.2269], '高雄市': [22.6273, 120.3014],
-  '屏東縣': [22.5519, 120.5487], '花蓮縣': [23.9871, 121.6015],
-  '台東縣': [22.7583, 121.1444],
-};
-
 const DISEASE_COLORS: Record<string, string> = {
   covid19: '#ef4444', influenza: '#3b82f6', conjunctivitis: '#f59e0b',
   enterovirus: '#8b5cf6', diarrhea: '#10b981',
@@ -481,53 +474,14 @@ function DiseaseMapPanel({ items }: { items: DiseaseItem[] }) {
     return { region, count, pct: totalPatients > 0 ? Math.round(count / totalPatients * 100) : 0 };
   });
 
-  // SVG coordinate mapping: lat/lng -> SVG x,y
-  // Bounding box: lat 21.9~25.4, lng 119.9~122.0
-  const mapToSVG = (lat: number, lng: number): [number, number] => {
-    const x = 60 + (lng - 119.9) / (122.0 - 119.9) * 280;
-    const y = 20 + (25.4 - lat) / (25.4 - 21.9) * 460;
-    return [x, y];
-  };
-
   return (
     <div className="space-y-6">
-      <PanelHeader icon={MapPin} color="from-red-600 to-rose-500" title="傳染病地圖" sub="5 項傳染病 · 13 縣市地區分佈" />
+      <PanelHeader icon={MapPin} color="from-red-600 to-rose-500" title="傳染病地圖" sub="5 項傳染病 · 13 縣市地區分佈 · 可互動縮放" />
 
       <div className="grid lg:grid-cols-[1fr_320px] gap-6">
-        {/* SVG Map */}
-        <div className="bg-slate-900/60 border border-slate-800/50 rounded-2xl p-4 flex items-center justify-center">
-          <svg viewBox="0 0 400 500" className="w-full max-w-[500px] h-auto">
-            {/* Taiwan outline (simplified) */}
-            <path d="M255,38 C265,35 280,42 290,55 C300,68 305,85 308,100 C312,120 318,140 322,165 C328,190 330,215 328,240 C325,260 320,280 312,300 C305,320 295,340 282,358 C270,375 255,390 240,402 C228,412 215,420 200,428 C188,434 175,438 165,438 C152,435 142,428 135,418 C128,405 122,390 118,375 C112,355 108,335 107,315 C108,295 112,275 118,255 C125,235 130,215 132,195 C132,175 128,155 130,138 C135,120 145,105 158,92 C172,78 188,65 205,55 C220,47 240,40 255,38 Z" 
-              className="fill-slate-800/40 stroke-slate-600/60" strokeWidth="1.5" />
-            {/* City dots with glow */}
-            {Object.entries(CITY_COORDS).map(([city, [lat, lng]]) => {
-              const [cx, cy] = mapToSVG(lat, lng);
-              const total = cityTotals[city] || 0;
-              const r = total > 0 ? 5 + (total / maxCityTotal) * 18 : 3;
-              // Dominant disease color for this city
-              const diseases = cityByDisease[city] || {};
-              const dominant = Object.entries(diseases).sort((a, b) => b[1] - a[1])[0];
-              const color = dominant ? DISEASE_COLORS[dominant[0]] : '#475569';
-              return (
-                <g key={city}>
-                  {total > 0 && (
-                    <circle cx={cx} cy={cy} r={r + 4} fill={color} opacity={0.15} className="animate-map-glow" />
-                  )}
-                  <circle cx={cx} cy={cy} r={r} fill={color} opacity={total > 0 ? 0.8 : 0.3}
-                    stroke={total > 0 ? color : '#475569'} strokeWidth={total > 0 ? 1.5 : 0.5} />
-                  <text x={cx} y={cy - r - 4} textAnchor="middle" className="fill-slate-300" fontSize="9" fontWeight="600">
-                    {city.replace('市', '').replace('縣', '')}
-                  </text>
-                  {total > 0 && (
-                    <text x={cx} y={cy + 3.5} textAnchor="middle" className="fill-white" fontSize="8" fontWeight="700">
-                      {total}
-                    </text>
-                  )}
-                </g>
-              );
-            })}
-          </svg>
+        {/* Leaflet Map */}
+        <div className="bg-slate-900/60 border border-slate-800/50 rounded-2xl overflow-hidden" style={{ minHeight: '520px' }}>
+          <DiseaseMapLeaflet cityData={{ cityTotals, cityByDisease, maxCityTotal }} />
         </div>
 
         {/* Right sidebar: legend + stats */}
