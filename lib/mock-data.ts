@@ -63,7 +63,7 @@ export const diseaseItems: DiseaseItem[] = [
 // ─── 醫療品質指標（39 項 CQL）───
 
 export const qualityIndicators: QualityIndicator[] = [
-  // 用藥安全 (16)
+  // 用藥安全 (18)
   { id: 'indicator-01', number: '01', name: '門診注射劑使用率', code: '3127', category: 'medication', numerator: null, denominator: null, rate: null, unit: '%' },
   { id: 'indicator-02', number: '02', name: '門診抗生素使用率', code: '1140.01', category: 'medication', numerator: null, denominator: null, rate: null, unit: '%' },
   { id: 'indicator-03-1', number: '03-1', name: '同院降血壓藥重疊', code: '1710', category: 'medication', numerator: null, denominator: null, rate: null, unit: '%' },
@@ -80,6 +80,8 @@ export const qualityIndicators: QualityIndicator[] = [
   { id: 'indicator-03-12', number: '03-12', name: '跨院抗思覺失調藥重疊', code: '1729', category: 'medication', numerator: null, denominator: null, rate: null, unit: '%' },
   { id: 'indicator-03-13', number: '03-13', name: '跨院抗憂鬱藥重疊', code: '1730', category: 'medication', numerator: null, denominator: null, rate: null, unit: '%' },
   { id: 'indicator-03-14', number: '03-14', name: '跨院安眠鎮靜藥重疊', code: '1731', category: 'medication', numerator: null, denominator: null, rate: null, unit: '%' },
+  { id: 'indicator-03-15', number: '03-15', name: '跨院抗血栓藥重疊', code: '3377', category: 'medication', numerator: null, denominator: null, rate: null, unit: '%' },
+  { id: 'indicator-03-16', number: '03-16', name: '跨院前列腺藥重疊', code: '3378', category: 'medication', numerator: null, denominator: null, rate: null, unit: '%' },
   // 門診品質 (5)
   { id: 'indicator-04', number: '04', name: '慢性病連續處方箋使用率', code: '1318', category: 'outpatient', numerator: null, denominator: null, rate: null, unit: '%' },
   { id: 'indicator-05', number: '05', name: '處方10種以上藥品率', code: '3128', category: 'outpatient', numerator: null, denominator: null, rate: null, unit: '%' },
