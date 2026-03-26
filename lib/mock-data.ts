@@ -42,9 +42,12 @@ export interface ESGIndicator {
   id: string;
   name: string;
   cql: string;
+  description: string;
   count: number | null;
   rate: number | null;
   unit: string;
+  countLabel: string;
+  rateLabel: string;
 }
 
 // ─── 傳染病管制（5 項 CQL）───
@@ -115,9 +118,9 @@ export const healthIndicators: HealthIndicator[] = [
 // ─── ESG 永續指標（3 項 CQL）───
 
 export const esgIndicators: ESGIndicator[] = [
-  { id: 'antibiotic', name: '抗生素使用率', cql: 'Antibiotic_Utilization', count: null, rate: null, unit: '%' },
-  { id: 'ehr', name: '電子病歷採用率', cql: 'EHR_Adoption_Rate', count: null, rate: null, unit: '%' },
-  { id: 'waste', name: '醫療廢棄物管理', cql: 'Waste', count: null, rate: null, unit: '%' },
+  { id: 'antibiotic', name: '抗生素使用率', cql: 'Antibiotic_Utilization', description: '監測抗生素合理使用與抗藥性管理 (國際算法)', count: null, rate: null, unit: '%', countLabel: '病人數', rateLabel: '使用率' },
+  { id: 'ehr', name: '電子病歷採用率', cql: 'EHR_Adoption_Rate', description: '追蹤病歷資料是否以結構化電子格式完整記錄', count: null, rate: null, unit: '%', countLabel: '病人數', rateLabel: '採用率' },
+  { id: 'waste', name: '醫療廢棄物管理', cql: 'Waste', description: '監測醫療廢棄物產生與處理情況', count: null, rate: null, unit: '%', countLabel: '廢棄物量', rateLabel: '回收率' },
 ];
 
 // ─── 統計 ───

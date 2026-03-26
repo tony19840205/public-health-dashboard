@@ -295,14 +295,18 @@ export default function HomePage() {
           </div>
           <div className="grid sm:grid-cols-3 gap-4">
             {esgIndicators.map((item) => (
-              <div key={item.id} className="p-5 rounded-xl border border-slate-200 bg-white hover:border-teal-300 transition-colors">
+              <div key={item.id} className="p-5 rounded-xl border border-teal-200 bg-teal-50 hover:shadow-sm transition-shadow">
                 <p className="text-sm font-semibold text-slate-800 mb-1">{item.name}</p>
-                <p className="text-xs text-slate-400 mb-3">{item.cql}</p>
-                <div className="flex items-baseline gap-2">
-                  <span className="text-3xl font-bold text-slate-900">
-                    {item.rate !== null ? item.rate : '--'}
-                  </span>
-                  <span className="text-sm text-slate-500">{item.unit}</span>
+                <p className="text-xs text-slate-500 mb-3">{item.description}</p>
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <p className="text-xs text-slate-500">{item.countLabel}</p>
+                    <p className="text-xl font-bold text-slate-900">{item.count !== null ? item.count.toLocaleString() : '--'}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-slate-500">{item.rateLabel}</p>
+                    <p className="text-xl font-bold text-slate-900">{item.rate !== null ? `${item.rate}${item.unit}` : '--'}</p>
+                  </div>
                 </div>
               </div>
             ))}
