@@ -52,6 +52,7 @@ const PANELS = [
   { id: 'medication', label: '用藥安全' },
   { id: 'med-gauge',  label: '用藥儀表' },
   { id: 'outpatient', label: '門診品質' },
+  { id: 'outpatient-gauge', label: '門診儀表' },
   { id: 'inpatient',  label: '住院品質' },
   { id: 'surgery',    label: '手術品質' },
   { id: 'outcome',    label: '結果品質' },
@@ -241,6 +242,7 @@ export default function DashboardPage() {
           {currentPanel.id === 'health-gauge' && <HealthGaugePanel items={healthIndicators} />}
           {currentPanel.id === 'esg' && <ESGPanel items={esgIndicators} />}
           {currentPanel.id === 'med-gauge' && <MedicationGaugePanel items={qualityByCategory('medication')} />}
+          {currentPanel.id === 'outpatient-gauge' && <OutpatientGaugePanel items={qualityByCategory('outpatient')} />}
 
           {['medication', 'outpatient', 'inpatient', 'surgery', 'outcome'].includes(currentPanel.id) && (
             <QualityPanel
@@ -1049,6 +1051,268 @@ function MedicationGaugePanel({ items }: { items: QualityIndicator[] }) {
           </p>
         </div>
       </div>
+    </div>
+  );
+}
+
+/* ─── 門診品質儀表面板 (半圓儀表 + 雷達圖 + 水平柱狀) ─── */
+
+function OutpatientGaugePanel({ items }: { items: QualityIndicator[] }) {
+  /* 燈號統計 */
+  const signals = items.map(q => {
+    if (q.rate === null) return 'gray';
+    if (q.rate <= 5) return 'green';
+    if (q.rate <= 15) return 'yellow';
+    return 'red';
+  });
+  const greenCount = signals.filter(s => s === 'green').length;
+  const yellowCount = signals.filter(s => s === 'yellow').length;
+  const redCount = signals.filter(s => s === 'red').length;
+
+  /* 目標值定義 */
+  const targets: Record<string, { target: number; lowerBetter: boolean }> = {
+    '04': { target: 80, lowerBetter: false },  // 慢性處方箋 越高越好
+    '05': { target: 10, lowerBetter: true },    // 處方≥10項 越低越好
+    '06': { target: 5, lowerBetter: true },     // 氣喘急診率 越低越好
+    '07': { target: 80, lowerBetter: false },   // HbA1c 越高越好
+    '08': { target: 5, lowerBetter: true },     // 同日再就診 越低越好
+  };
+
+  /* 雷達圖數據 */
+  const radarItems = items.map(q => {
+    const t = targets[q.number] || { target: 10, lowerBetter: true };
+    return { ...q, target: t.target, lowerBetter: t.lowerBetter };
+  });
+
+  /* SVG 雷達圖繪製 */
+  const radarSize = 280;
+  const radarCenter = radarSize / 2;
+  const radarRadius = radarSize * 0.38;
+  const radarAngles = radarItems.map((_, i) => (Math.PI * 2 * i) / radarItems.length - Math.PI / 2);
+
+  const getRadarPoint = (index: number, value: number, max: number) => {
+    const r = (value / max) * radarRadius;
+    return {
+      x: radarCenter + r * Math.cos(radarAngles[index]),
+      y: radarCenter + r * Math.sin(radarAngles[index]),
+    };
+  };
+
+  const radarMax = 100;
+  const gridLevels = [0.25, 0.5, 0.75, 1.0];
+
+  /* 計算 polygon 路徑 */
+  const valuePolygon = radarItems.map((q, i) => {
+    const val = q.rate !== null ? q.rate : 0;
+    const p = getRadarPoint(i, val, radarMax);
+    return `${p.x},${p.y}`;
+  }).join(' ');
+
+  const targetPolygon = radarItems.map((q, i) => {
+    const p = getRadarPoint(i, q.target, radarMax);
+    return `${p.x},${p.y}`;
+  }).join(' ');
+
+  return (
+    <div className="space-y-6">
+      <PanelHeader icon={Stethoscope} color="from-blue-600 to-indigo-500" title="門診儀表" sub="半圓儀表 · 雷達圖 · 5 項門診品質指標一覽" />
+
+      {/* 上排：半圓儀表 */}
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+        {items.map(q => {
+          const t = targets[q.number] || { target: 10, lowerBetter: true };
+          return (
+            <div key={q.id} className="bg-slate-900/60 border border-slate-800/50 rounded-2xl p-4 flex flex-col items-center">
+              <OutpatientDonut value={q.rate} target={t.target} lowerBetter={t.lowerBetter} label={q.name} size={120} />
+              {q.numerator !== null && (
+                <p className="text-[10px] text-slate-500 mt-1">{q.numerator} / {q.denominator}</p>
+              )}
+            </div>
+          );
+        })}
+        {/* 燈號統計 */}
+        <div className="bg-slate-900/60 border border-slate-800/50 rounded-2xl p-4 flex flex-col items-center justify-center">
+          <h3 className="text-xs font-semibold text-slate-300 mb-3">5 項燈號</h3>
+          <div className="flex gap-4">
+            <div className="text-center">
+              <div className="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center mb-1 mx-auto">
+                <span className="text-sm font-extrabold text-emerald-400">{greenCount}</span>
+              </div>
+              <span className="text-[10px] text-emerald-400">正常</span>
+            </div>
+            <div className="text-center">
+              <div className="w-8 h-8 rounded-full bg-amber-400/20 flex items-center justify-center mb-1 mx-auto">
+                <span className="text-sm font-extrabold text-amber-400">{yellowCount}</span>
+              </div>
+              <span className="text-[10px] text-amber-400">注意</span>
+            </div>
+            <div className="text-center">
+              <div className="w-8 h-8 rounded-full bg-red-500/20 flex items-center justify-center mb-1 mx-auto">
+                <span className="text-sm font-extrabold text-red-400">{redCount}</span>
+              </div>
+              <span className="text-[10px] text-red-400">警戒</span>
+            </div>
+          </div>
+          <p className="text-[10px] text-slate-500 mt-2">🟢 ≤5%　🟡 ≤15%　🔴 &gt;15%</p>
+        </div>
+      </div>
+
+      {/* 下排：雷達圖 + 水平柱狀 */}
+      <div className="grid md:grid-cols-2 gap-4">
+        {/* 雷達圖 */}
+        <div className="bg-slate-900/60 border border-slate-800/50 rounded-2xl p-6 flex flex-col items-center">
+          <h3 className="text-sm font-semibold text-slate-300 mb-3">指標雷達圖</h3>
+          <svg width={radarSize} height={radarSize} viewBox={`0 0 ${radarSize} ${radarSize}`}>
+            {/* 網格 */}
+            {gridLevels.map(level => (
+              <polygon key={level}
+                points={radarAngles.map((_, i) => {
+                  const p = getRadarPoint(i, radarMax * level, radarMax);
+                  return `${p.x},${p.y}`;
+                }).join(' ')}
+                fill="none" stroke="#334155" strokeWidth={0.5}
+              />
+            ))}
+            {/* 軸線 */}
+            {radarAngles.map((_, i) => {
+              const p = getRadarPoint(i, radarMax, radarMax);
+              return <line key={i} x1={radarCenter} y1={radarCenter} x2={p.x} y2={p.y} stroke="#334155" strokeWidth={0.5} />;
+            })}
+            {/* 目標多邊形 */}
+            <polygon points={targetPolygon} fill="rgba(148,163,184,0.1)" stroke="#64748b" strokeWidth={1.5} strokeDasharray="4 3" />
+            {/* 實際值多邊形 */}
+            <polygon points={valuePolygon} fill="rgba(59,130,246,0.2)" stroke="#3b82f6" strokeWidth={2} />
+            {/* 實際值點 */}
+            {radarItems.map((q, i) => {
+              const val = q.rate !== null ? q.rate : 0;
+              const p = getRadarPoint(i, val, radarMax);
+              return <circle key={q.id} cx={p.x} cy={p.y} r={4} fill="#3b82f6" stroke="#1e293b" strokeWidth={2} />;
+            })}
+            {/* 標籤 */}
+            {radarItems.map((q, i) => {
+              const p = getRadarPoint(i, radarMax * 1.2, radarMax);
+              return (
+                <text key={`label-${q.id}`} x={p.x} y={p.y}
+                  textAnchor="middle" dominantBaseline="middle"
+                  className="fill-slate-400 text-[10px]"
+                >
+                  {q.name.length > 6 ? q.name.substring(0, 6) + '..' : q.name}
+                </text>
+              );
+            })}
+          </svg>
+          <div className="flex items-center gap-4 mt-2 text-[10px]">
+            <span className="flex items-center gap-1"><span className="w-3 h-0.5 bg-blue-500 inline-block rounded" /> 本院</span>
+            <span className="flex items-center gap-1"><span className="w-3 h-0.5 bg-slate-500 inline-block rounded border-dashed" style={{ borderTop: '1px dashed #64748b', background: 'transparent' }} /> 目標</span>
+          </div>
+        </div>
+
+        {/* 水平柱狀圖 */}
+        <div className="bg-slate-900/60 border border-slate-800/50 rounded-2xl p-6">
+          <h3 className="text-sm font-semibold text-slate-300 mb-4">各指標達成狀態</h3>
+          <div className="space-y-3">
+            {radarItems.map(q => {
+              const val = q.rate;
+              const isGood = val !== null
+                ? (q.lowerBetter ? val <= q.target : val >= q.target)
+                : false;
+              const barColor = val === null ? '#475569' : isGood ? '#10b981' : '#f59e0b';
+              const pct = val !== null ? Math.min((val / radarMax) * 100, 100) : 0;
+              const targetPct = (q.target / radarMax) * 100;
+
+              return (
+                <div key={q.id}>
+                  <div className="flex items-center justify-between mb-1">
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-800 text-slate-400">{q.number}</span>
+                      <span className="text-xs text-slate-300">{q.name}</span>
+                    </div>
+                    <span className="text-xs font-bold tabular-nums" style={{ color: barColor }}>
+                      {val !== null ? `${val}%` : '--'}
+                    </span>
+                  </div>
+                  <div className="relative h-4 bg-slate-800 rounded-full overflow-hidden">
+                    <div className="absolute inset-y-0 left-0 rounded-full transition-all duration-700"
+                      style={{ width: `${pct}%`, background: barColor }}
+                    />
+                    {/* 目標線 */}
+                    <div className="absolute inset-y-0 w-0.5 bg-slate-400"
+                      style={{ left: `${targetPct}%` }}
+                    />
+                  </div>
+                  <div className="flex justify-between mt-0.5">
+                    <span className="text-[9px] text-slate-500">
+                      {q.lowerBetter ? '越低越好' : '越高越好'}
+                    </span>
+                    <span className="text-[9px] text-slate-500">
+                      目標: {q.lowerBetter ? '≤' : '≥'}{q.target}%
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+
+      {/* 說明 */}
+      <div className="bg-slate-900/40 border border-slate-800/30 rounded-xl p-4 flex items-start gap-3">
+        <div className="w-8 h-8 rounded-lg bg-slate-800 flex items-center justify-center shrink-0 mt-0.5">
+          <Activity className="w-4 h-4 text-slate-400" />
+        </div>
+        <div>
+          <p className="text-sm font-medium text-slate-300 mb-1">圖表說明</p>
+          <p className="text-xs text-slate-500 leading-relaxed">
+            半圓儀表顯示各門診指標達成狀態。雷達圖比較 5 項指標與目標值的差距（藍色=本院，虛線=目標）。
+            水平柱狀圖逐項顯示達成情形，綠色為達標，橘色為待改善，白線為目標位置。
+            指標 04、07 越高越好，指標 05、06、08 越低越好。
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* 門診品質半圓儀表 */
+function OutpatientDonut({ value, target, lowerBetter, label, size = 120 }: {
+  value: number | null; target: number; lowerBetter: boolean; label: string; size?: number;
+}) {
+  const strokeWidth = 12;
+  const radius = (size - strokeWidth) / 2;
+  const circumference = Math.PI * radius;
+
+  const isGood = value !== null ? (lowerBetter ? value <= target : value >= target) : false;
+  const pct = value !== null
+    ? (lowerBetter
+        ? Math.max(0, Math.min(1, 1 - (value / (target * 2))))
+        : Math.max(0, Math.min(1, value / target)))
+    : 0;
+  const offset = circumference * (1 - pct);
+  const signal = value === null ? '#475569' : isGood ? '#10b981' : '#f59e0b';
+
+  return (
+    <div className="flex flex-col items-center">
+      <svg width={size} height={size / 2 + 10} viewBox={`0 0 ${size} ${size / 2 + 10}`}>
+        <path
+          d={`M ${strokeWidth / 2} ${size / 2} A ${radius} ${radius} 0 0 1 ${size - strokeWidth / 2} ${size / 2}`}
+          fill="none" stroke="#1e293b" strokeWidth={strokeWidth} strokeLinecap="round"
+        />
+        <path
+          d={`M ${strokeWidth / 2} ${size / 2} A ${radius} ${radius} 0 0 1 ${size - strokeWidth / 2} ${size / 2}`}
+          fill="none" stroke={signal} strokeWidth={strokeWidth} strokeLinecap="round"
+          strokeDasharray={circumference}
+          strokeDashoffset={offset}
+          className="transition-all duration-1000 ease-out"
+          style={{ filter: `drop-shadow(0 0 6px ${signal}66)` }}
+        />
+      </svg>
+      <div className="-mt-6 text-center">
+        <span className="text-xl font-extrabold tabular-nums" style={{ color: signal }}>
+          {value !== null ? `${value}%` : '--'}
+        </span>
+      </div>
+      <p className="text-[10px] text-slate-400 mt-1 text-center leading-tight">{label}</p>
+      <p className="text-[9px] text-slate-500">目標: {lowerBetter ? '≤' : '≥'}{target}%</p>
     </div>
   );
 }
