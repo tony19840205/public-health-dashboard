@@ -50,6 +50,7 @@ const PANELS = [
   { id: 'health',       label: '國民健康' },
   { id: 'health-gauge', label: '健康儀表' },
   { id: 'medication', label: '用藥安全' },
+  { id: 'med-gauge',  label: '用藥儀表' },
   { id: 'outpatient', label: '門診品質' },
   { id: 'inpatient',  label: '住院品質' },
   { id: 'surgery',    label: '手術品質' },
@@ -239,6 +240,7 @@ export default function DashboardPage() {
           {currentPanel.id === 'health' && <HealthPanel items={healthIndicators} />}
           {currentPanel.id === 'health-gauge' && <HealthGaugePanel items={healthIndicators} />}
           {currentPanel.id === 'esg' && <ESGPanel items={esgIndicators} />}
+          {currentPanel.id === 'med-gauge' && <MedicationGaugePanel items={qualityByCategory('medication')} />}
 
           {['medication', 'outpatient', 'inpatient', 'surgery', 'outcome'].includes(currentPanel.id) && (
             <QualityPanel
@@ -846,6 +848,206 @@ function QualityPanel({ category, label, items }: {
             </div>
           );
         })}
+      </div>
+    </div>
+  );
+}
+
+/* ─── 用藥儀表面板 (蝴蝶對比圖 + 半圓儀表) ─── */
+
+/* 半圓儀表 */
+function HalfDonut({ value, threshold, label, color, size = 140 }: {
+  value: number | null; threshold: number; label: string; color: string; size?: number;
+}) {
+  const strokeWidth = 14;
+  const radius = (size - strokeWidth) / 2;
+  const circumference = Math.PI * radius; // half circle
+  const pct = value !== null ? Math.min(value / (threshold * 2), 1) : 0;
+  const offset = circumference * (1 - pct);
+  const signal = value === null ? '#475569' : value <= 3 ? '#10b981' : value <= 8 ? '#f59e0b' : '#ef4444';
+
+  return (
+    <div className="flex flex-col items-center">
+      <svg width={size} height={size / 2 + 10} viewBox={`0 0 ${size} ${size / 2 + 10}`}>
+        {/* 背景弧 */}
+        <path
+          d={`M ${strokeWidth / 2} ${size / 2} A ${radius} ${radius} 0 0 1 ${size - strokeWidth / 2} ${size / 2}`}
+          fill="none" stroke="#1e293b" strokeWidth={strokeWidth} strokeLinecap="round"
+        />
+        {/* 閾值色帶 */}
+        <path
+          d={`M ${strokeWidth / 2} ${size / 2} A ${radius} ${radius} 0 0 1 ${size - strokeWidth / 2} ${size / 2}`}
+          fill="none" stroke={signal} strokeWidth={strokeWidth} strokeLinecap="round"
+          strokeDasharray={circumference}
+          strokeDashoffset={offset}
+          className="transition-all duration-1000 ease-out"
+          style={{ filter: `drop-shadow(0 0 6px ${signal}66)` }}
+        />
+      </svg>
+      <div className="-mt-8 text-center">
+        <span className="text-2xl font-extrabold tabular-nums" style={{ color: signal }}>
+          {value !== null ? `${value}%` : '--'}
+        </span>
+      </div>
+      <p className="text-xs text-slate-400 mt-1">{label}</p>
+      <p className="text-[10px] text-slate-500">閾值: ≤{threshold}%</p>
+    </div>
+  );
+}
+
+/* 蝴蝶對比長條 */
+function ButterflyBar({ label, leftValue, rightValue, maxVal }: {
+  label: string; leftValue: number | null; rightValue: number | null; maxVal: number;
+}) {
+  const barSignal = (v: number | null) =>
+    v === null ? '#475569' : v <= 3 ? '#10b981' : v <= 8 ? '#f59e0b' : '#ef4444';
+  const leftPct = leftValue !== null ? Math.min(leftValue / maxVal * 100, 100) : 0;
+  const rightPct = rightValue !== null ? Math.min(rightValue / maxVal * 100, 100) : 0;
+
+  return (
+    <div className="grid grid-cols-[1fr_100px_1fr] items-center gap-2 py-1.5">
+      {/* 左邊 (同院) */}
+      <div className="flex items-center justify-end gap-2">
+        <span className="text-sm font-bold tabular-nums" style={{ color: barSignal(leftValue) }}>
+          {leftValue !== null ? `${leftValue}%` : '--'}
+        </span>
+        <div className="h-6 rounded-l-md transition-all duration-700 ease-out" style={{
+          width: `${leftPct}%`,
+          minWidth: leftValue !== null ? '4px' : '0',
+          background: `linear-gradient(to left, ${barSignal(leftValue)}, ${barSignal(leftValue)}88)`,
+        }} />
+      </div>
+      {/* 中間藥名 */}
+      <div className="text-center">
+        <span className="text-xs font-medium text-slate-300 whitespace-nowrap">{label}</span>
+      </div>
+      {/* 右邊 (跨院) */}
+      <div className="flex items-center gap-2">
+        <div className="h-6 rounded-r-md transition-all duration-700 ease-out" style={{
+          width: `${rightPct}%`,
+          minWidth: rightValue !== null ? '4px' : '0',
+          background: `linear-gradient(to right, ${barSignal(rightValue)}88, ${barSignal(rightValue)})`,
+        }} />
+        <span className="text-sm font-bold tabular-nums" style={{ color: barSignal(rightValue) }}>
+          {rightValue !== null ? `${rightValue}%` : '--'}
+        </span>
+      </div>
+    </div>
+  );
+}
+
+function MedicationGaugePanel({ items }: { items: QualityIndicator[] }) {
+  /* 分出三組 */
+  const general = items.filter(q => ['01', '02'].includes(q.number));
+  const sameHospital = items.filter(q =>
+    ['03-1','03-2','03-3','03-4','03-5','03-6','03-7','03-8'].includes(q.number));
+  const crossHospital = items.filter(q =>
+    ['03-9','03-10','03-11','03-12','03-13','03-14','03-15','03-16'].includes(q.number));
+
+  /* 蝴蝶圖配對 */
+  const drugPairs = [
+    { label: '降血壓', same: '03-1', cross: '03-9' },
+    { label: '降血脂', same: '03-2', cross: '03-10' },
+    { label: '降血糖', same: '03-3', cross: '03-11' },
+    { label: '抗思覺失調', same: '03-4', cross: '03-12' },
+    { label: '抗憂鬱', same: '03-5', cross: '03-13' },
+    { label: '安眠鎮靜', same: '03-6', cross: '03-14' },
+    { label: '抗血栓', same: '03-7', cross: '03-15' },
+    { label: '前列腺', same: '03-8', cross: '03-16' },
+  ];
+
+  const findRate = (num: string) => items.find(q => q.number === num)?.rate ?? null;
+
+  /* 蝴蝶圖最大值 (用於比例尺) */
+  const allOverlapRates = [...sameHospital, ...crossHospital]
+    .map(q => q.rate).filter((r): r is number => r !== null);
+  const maxVal = allOverlapRates.length > 0 ? Math.max(...allOverlapRates, 1) : 20;
+
+  /* 燈號統計 */
+  const signals = items.map(q => {
+    if (q.rate === null) return 'gray';
+    if (q.rate <= 3) return 'green';
+    if (q.rate <= 8) return 'yellow';
+    return 'red';
+  });
+  const greenCount = signals.filter(s => s === 'green').length;
+  const yellowCount = signals.filter(s => s === 'yellow').length;
+  const redCount = signals.filter(s => s === 'red').length;
+
+  return (
+    <div className="space-y-6">
+      <PanelHeader icon={Pill} color="from-emerald-600 to-teal-500" title="用藥儀表" sub="蝴蝶對比圖 · 同院 vs 跨院藥品重疊一覽" />
+
+      {/* 上排：半圓儀表 + 燈號統計 */}
+      <div className="grid md:grid-cols-3 gap-4">
+        {general.map(q => (
+          <div key={q.id} className="bg-slate-900/60 border border-slate-800/50 rounded-2xl p-5 flex flex-col items-center">
+            <HalfDonut value={q.rate} threshold={5} label={q.name} color="#06b6d4" size={160} />
+            {q.numerator !== null && (
+              <p className="text-[10px] text-slate-500 mt-2">{q.numerator} / {q.denominator}</p>
+            )}
+          </div>
+        ))}
+        {/* 燈號統計 */}
+        <div className="bg-slate-900/60 border border-slate-800/50 rounded-2xl p-5 flex flex-col items-center justify-center">
+          <h3 className="text-sm font-semibold text-slate-300 mb-4">18 項燈號統計</h3>
+          <div className="flex gap-6">
+            <div className="text-center">
+              <div className="w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center mb-1 mx-auto">
+                <span className="text-lg font-extrabold text-emerald-400">{greenCount}</span>
+              </div>
+              <span className="text-[10px] text-emerald-400">正常</span>
+            </div>
+            <div className="text-center">
+              <div className="w-10 h-10 rounded-full bg-amber-400/20 flex items-center justify-center mb-1 mx-auto">
+                <span className="text-lg font-extrabold text-amber-400">{yellowCount}</span>
+              </div>
+              <span className="text-[10px] text-amber-400">注意</span>
+            </div>
+            <div className="text-center">
+              <div className="w-10 h-10 rounded-full bg-red-500/20 flex items-center justify-center mb-1 mx-auto">
+                <span className="text-lg font-extrabold text-red-400">{redCount}</span>
+              </div>
+              <span className="text-[10px] text-red-400">警戒</span>
+            </div>
+          </div>
+          <p className="text-[10px] text-slate-500 mt-3">🟢 ≤3%　🟡 ≤8%　🔴 &gt;8%</p>
+        </div>
+      </div>
+
+      {/* 蝴蝶對比圖 */}
+      <div className="bg-slate-900/60 border border-slate-800/50 rounded-2xl p-6">
+        <h3 className="text-sm font-semibold text-slate-300 mb-1 text-center">藥品重疊率：同院 vs 跨院 對比</h3>
+        <div className="grid grid-cols-[1fr_100px_1fr] text-center mb-2">
+          <span className="text-[10px] text-cyan-400 font-medium">← 同院</span>
+          <span className="text-[10px] text-slate-500">藥品類別</span>
+          <span className="text-[10px] text-violet-400 font-medium">跨院 →</span>
+        </div>
+        <div className="divide-y divide-slate-800/40">
+          {drugPairs.map(pair => (
+            <ButterflyBar
+              key={pair.label}
+              label={pair.label}
+              leftValue={findRate(pair.same)}
+              rightValue={findRate(pair.cross)}
+              maxVal={maxVal}
+            />
+          ))}
+        </div>
+      </div>
+
+      {/* 說明 */}
+      <div className="bg-slate-900/40 border border-slate-800/30 rounded-xl p-4 flex items-start gap-3">
+        <div className="w-8 h-8 rounded-lg bg-slate-800 flex items-center justify-center shrink-0 mt-0.5">
+          <Activity className="w-4 h-4 text-slate-400" />
+        </div>
+        <div>
+          <p className="text-sm font-medium text-slate-300 mb-1">圖表說明</p>
+          <p className="text-xs text-slate-500 leading-relaxed">
+            半圓儀表顯示門診注射劑與抗生素使用率。蝴蝶對比圖將 8 種藥品的同院(左)與跨院(右)重疊率並列，
+            長條長度代表嚴重程度，顏色依燈號標準（綠 ≤3%、黃 ≤8%、紅 &gt;8%）。跨院重疊通常高於同院，需重點關注紅色項目。
+          </p>
+        </div>
       </div>
     </div>
   );
