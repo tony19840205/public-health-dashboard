@@ -170,13 +170,20 @@ export default function DashboardPage() {
             <button
               key={p.id}
               onClick={() => { setPanel(i); setPlaying(false); }}
-              className={`px-3 py-1.5 text-xs rounded-full transition-all ${
+              className={`px-3 py-1.5 text-xs rounded-full transition-all text-center leading-tight ${
                 i === panel
                   ? 'bg-blue-600 text-white font-semibold shadow-lg shadow-blue-600/30'
                   : 'text-slate-400 hover:text-white hover:bg-slate-800'
               }`}
             >
-              {p.label}
+              {(() => {
+                const l = p.label;
+                const clean = l.replace(/\s/g, '');
+                const len = Array.from(clean).length;
+                if (len === 4) { const mid = 2; return <>{clean.slice(0, mid)}<br />{clean.slice(mid)}</>; }
+                if (len === 5) { const mid = 3; return <>{clean.slice(0, mid)}<br />{clean.slice(mid)}</>; }
+                return l;
+              })()}
             </button>
           ))}
         </div>
