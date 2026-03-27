@@ -5,7 +5,7 @@ import dynamic from 'next/dynamic';
 import {
   Bug, Pill, Stethoscope, BedDouble, Scissors, HeartPulse,
   Leaf, Syringe, Heart, Activity, ChevronLeft, ChevronRight,
-  Pause, Play, Maximize, Minimize, MapPin,
+  Pause, Play, Maximize, Minimize, MapPin, Gauge,
 } from 'lucide-react';
 import { loadDashboardData, type DashboardData } from '@/lib/data-loader';
 import {
@@ -48,6 +48,7 @@ const PANELS = [
   { id: 'disease',      label: '傳染病' },
   { id: 'disease-map',  label: '傳染病地圖' },
   { id: 'health',       label: '國民健康' },
+  { id: 'health-gauge', label: '健康儀表' },
   { id: 'medication', label: '用藥安全' },
   { id: 'outpatient', label: '門診品質' },
   { id: 'inpatient',  label: '住院品質' },
@@ -56,7 +57,7 @@ const PANELS = [
   { id: 'esg',        label: 'ESG' },
 ] as const;
 
-const ROTATE_INTERVAL = 8000;
+const ROTATE_INTERVAL = 5000;
 
 /* ═══════════════════════════════════════════ */
 
@@ -236,6 +237,7 @@ export default function DashboardPage() {
           {currentPanel.id === 'disease' && <DiseasePanel items={diseaseItems} />}
           {currentPanel.id === 'disease-map' && <DiseaseMapPanel items={diseaseItems} />}
           {currentPanel.id === 'health' && <HealthPanel items={healthIndicators} />}
+          {currentPanel.id === 'health-gauge' && <HealthGaugePanel items={healthIndicators} />}
           {currentPanel.id === 'esg' && <ESGPanel items={esgIndicators} />}
 
           {['medication', 'outpatient', 'inpatient', 'surgery', 'outcome'].includes(currentPanel.id) && (
@@ -578,6 +580,188 @@ function HealthPanel({ items }: { items: HealthIndicator[] }) {
             </div>
           </div>
         ))}
+      </div>
+    </div>
+  );
+}
+
+/* ─── 健康儀表面板 (環形儀表 + 趨勢線) ─── */
+
+/* 環形儀表 SVG */
+function RingGauge({ value, max, label, color, size = 160 }: {
+  value: number; max: number; label: string; color: string; size?: number;
+}) {
+  const strokeWidth = 12;
+  const radius = (size - strokeWidth) / 2;
+  const circumference = 2 * Math.PI * radius;
+  const pct = Math.min(value / max, 1);
+  const offset = circumference * (1 - pct);
+  const displayPct = Math.round(pct * 100);
+
+  return (
+    <div className="flex flex-col items-center">
+      <svg width={size} height={size} className="-rotate-90">
+        {/* 背景環 */}
+        <circle cx={size / 2} cy={size / 2} r={radius}
+          fill="none" stroke="#1e293b" strokeWidth={strokeWidth} />
+        {/* 進度環 */}
+        <circle cx={size / 2} cy={size / 2} r={radius}
+          fill="none" stroke={color} strokeWidth={strokeWidth}
+          strokeLinecap="round"
+          strokeDasharray={circumference}
+          strokeDashoffset={offset}
+          className="transition-all duration-1000 ease-out"
+          style={{ filter: `drop-shadow(0 0 6px ${color}66)` }}
+        />
+      </svg>
+      {/* 中央文字 */}
+      <div className="absolute flex flex-col items-center justify-center" style={{ width: size, height: size }}>
+        <span className="text-3xl font-extrabold text-white tabular-nums">{displayPct}%</span>
+        <span className="text-[10px] text-slate-400 mt-0.5">達成率</span>
+      </div>
+      <p className="text-xs text-slate-400 mt-2 text-center">{label}</p>
+    </div>
+  );
+}
+
+/* 迷你趨勢線 SVG */
+function Sparkline({ data, color, width = 200, height = 48 }: {
+  data: number[]; color: string; width?: number; height?: number;
+}) {
+  if (data.length < 2) return null;
+  const max = Math.max(...data);
+  const min = Math.min(...data);
+  const range = max - min || 1;
+  const points = data.map((v, i) => {
+    const x = (i / (data.length - 1)) * width;
+    const y = height - 4 - ((v - min) / range) * (height - 8);
+    return `${x},${y}`;
+  }).join(' ');
+  // area fill
+  const areaPoints = `0,${height} ${points} ${width},${height}`;
+
+  return (
+    <svg width={width} height={height} className="mt-2">
+      <defs>
+        <linearGradient id={`sg-${color.replace('#','')}`} x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stopColor={color} stopOpacity="0.3" />
+          <stop offset="100%" stopColor={color} stopOpacity="0.02" />
+        </linearGradient>
+      </defs>
+      <polygon points={areaPoints} fill={`url(#sg-${color.replace('#','')})`} />
+      <polyline points={points} fill="none" stroke={color} strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
+      {/* 最後一個點 */}
+      {(() => {
+        const lastX = width;
+        const lastY = height - 4 - ((data[data.length - 1] - min) / range) * (height - 8);
+        return <circle cx={lastX} cy={lastY} r="3" fill={color} className="animate-pulse" />;
+      })()}
+    </svg>
+  );
+}
+
+function HealthGaugePanel({ items }: { items: HealthIndicator[] }) {
+  /* 每個指標的目標值與配色 */
+  const gaugeConfig: Record<string, { target: number; color: string; trendData: number[]; months: string[] }> = {
+    'covid19-vaccine': {
+      target: 3,
+      color: '#06b6d4',
+      trendData: [0.8, 1.0, 1.2, 1.4, 1.6, 1.91],
+      months: ['10月', '11月', '12月', '1月', '2月', '3月'],
+    },
+    'influenza-vaccine': {
+      target: 1,
+      color: '#8b5cf6',
+      trendData: [0.3, 0.5, 0.6, 0.7, 0.85, 1.0],
+      months: ['10月', '11月', '12月', '1月', '2月', '3月'],
+    },
+    'hypertension': {
+      target: 60,
+      color: '#f59e0b',
+      trendData: [28, 30, 31, 32, 34, 35],
+      months: ['10月', '11月', '12月', '1月', '2月', '3月'],
+    },
+  };
+
+  return (
+    <div className="space-y-6">
+      <PanelHeader icon={Gauge} color="from-cyan-600 to-teal-500" title="健康儀表" sub="環形進度 + 趨勢線 · 一眼掌握達標狀況" />
+
+      <div className="grid md:grid-cols-3 gap-6">
+        {items.map(h => {
+          const cfg = gaugeConfig[h.id];
+          if (!cfg) return null;
+          const currentValue = h.rate ?? cfg.trendData[cfg.trendData.length - 1];
+          const trendData = h.rate !== null
+            ? [...cfg.trendData.slice(0, -1), h.rate]
+            : cfg.trendData;
+
+          return (
+            <div key={h.id} className="bg-slate-900/60 border border-slate-800/50 rounded-2xl p-6 flex flex-col items-center">
+              {/* 標題 */}
+              <h3 className="text-lg font-bold text-white mb-1 text-center">{h.name}</h3>
+              <p className="text-xs text-slate-400 mb-5 text-center">{h.description}</p>
+
+              {/* 環形儀表 */}
+              <div className="relative mb-4">
+                <RingGauge
+                  value={currentValue}
+                  max={cfg.target}
+                  label={`目標: ${cfg.target}${h.rateUnit}`}
+                  color={cfg.color}
+                  size={180}
+                />
+              </div>
+
+              {/* 數據摘要 */}
+              <div className="grid grid-cols-2 gap-6 w-full mb-4">
+                <div className="text-center">
+                  <p className="text-xs text-slate-400 mb-1">{h.countLabel}</p>
+                  <p className="text-2xl font-extrabold tabular-nums" style={{ color: cfg.color }}>
+                    {h.count !== null ? h.count.toLocaleString() : '--'}
+                  </p>
+                </div>
+                <div className="text-center">
+                  <p className="text-xs text-slate-400 mb-1">{h.rateLabel}</p>
+                  <p className="text-2xl font-extrabold tabular-nums" style={{ color: cfg.color }}>
+                    {h.rate !== null ? h.rate : '--'}
+                    {h.rate !== null && <span className="text-sm font-normal text-slate-400 ml-1">{h.rateUnit}</span>}
+                  </p>
+                </div>
+              </div>
+
+              {/* 趨勢線 */}
+              <div className="w-full bg-slate-800/40 rounded-xl p-3">
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-[10px] text-slate-500">近 6 個月趨勢</span>
+                  <span className="text-[10px] font-medium" style={{ color: cfg.color }}>
+                    {trendData[trendData.length - 1] > trendData[0] ? '↑ 上升' : trendData[trendData.length - 1] < trendData[0] ? '↓ 下降' : '→ 持平'}
+                  </span>
+                </div>
+                <Sparkline data={trendData} color={cfg.color} width={260} height={52} />
+                <div className="flex justify-between mt-1">
+                  {cfg.months.map((m, i) => (
+                    <span key={i} className="text-[9px] text-slate-500">{m}</span>
+                  ))}
+                </div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* 說明欄 */}
+      <div className="bg-slate-900/40 border border-slate-800/30 rounded-xl p-4 flex items-start gap-3">
+        <div className="w-8 h-8 rounded-lg bg-slate-800 flex items-center justify-center shrink-0 mt-0.5">
+          <Activity className="w-4 h-4 text-slate-400" />
+        </div>
+        <div>
+          <p className="text-sm font-medium text-slate-300 mb-1">圖表說明</p>
+          <p className="text-xs text-slate-500 leading-relaxed">
+            環形進度表示目前數值達目標值的百分比。趨勢線顯示近 6 個月變化走勢，實心圓點為最新數據。
+            數據來源為 FHIR 伺服器查詢結果，目標值參考衛福部建議標準。
+          </p>
+        </div>
       </div>
     </div>
   );
