@@ -56,6 +56,7 @@ const PANELS = [
   { id: 'inpatient',  label: '住院品質' },
   { id: 'inpatient-gauge', label: '住院儀表' },
   { id: 'surgery',    label: '手術品質' },
+  { id: 'surgery-gauge', label: '手術儀表' },
   { id: 'outcome',    label: '結果品質' },
   { id: 'esg',        label: 'ESG' },
 ] as const;
@@ -245,6 +246,7 @@ export default function DashboardPage() {
           {currentPanel.id === 'med-gauge' && <MedicationGaugePanel items={qualityByCategory('medication')} />}
           {currentPanel.id === 'outpatient-gauge' && <OutpatientGaugePanel items={qualityByCategory('outpatient')} />}
           {currentPanel.id === 'inpatient-gauge' && <InpatientGaugePanel items={qualityByCategory('inpatient')} />}
+          {currentPanel.id === 'surgery-gauge' && <SurgeryGaugePanel items={qualityByCategory('surgery')} />}
 
           {['medication', 'outpatient', 'inpatient', 'surgery', 'outcome'].includes(currentPanel.id) && (
             <QualityPanel
@@ -1473,6 +1475,275 @@ function InpatientGaugePanel({ items }: { items: QualityIndicator[] }) {
           </p>
         </div>
       </div>
+    </div>
+  );
+}
+
+/* ─── 手術品質儀表面板 ─── */
+function SurgeryGaugePanel({ items }: { items: QualityIndicator[] }) {
+  /* 目標值定義（全部越低越好） */
+  const targets: Record<string, { target: number; lowerBetter: boolean; unit: string }> = {
+    '12':   { target: 5,  lowerBetter: true, unit: '%' },
+    '13':   { target: 3,  lowerBetter: true, unit: '次' },
+    '14':   { target: 3,  lowerBetter: true, unit: '%' },
+    '15-1': { target: 2,  lowerBetter: true, unit: '%' },
+    '15-2': { target: 2,  lowerBetter: true, unit: '%' },
+    '15-3': { target: 2,  lowerBetter: true, unit: '%' },
+    '16':   { target: 3,  lowerBetter: true, unit: '%' },
+    '19':   { target: 2,  lowerBetter: true, unit: '%' },
+  };
+
+  /* 燈號統計 */
+  const signals = items.map(q => {
+    const t = targets[q.number];
+    if (q.rate === null || !t) return 'gray';
+    if (q.rate <= t.target) return 'green';
+    if (q.rate <= t.target * 1.5) return 'yellow';
+    return 'red';
+  });
+  const greenCount  = signals.filter(s => s === 'green').length;
+  const yellowCount = signals.filter(s => s === 'yellow').length;
+  const redCount    = signals.filter(s => s === 'red').length;
+
+  /* 感染熱力矩陣定義 */
+  const heatGroups = [
+    { label: '膝關節感染', ids: ['15-1', '15-2', '15-3'] },
+    { label: '傷口感染', ids: ['16', '19'] },
+    { label: '抗生素', ids: ['12'] },
+    { label: '其他', ids: ['13', '14'] },
+  ];
+  const heatRows = items.map(q => {
+    const t = targets[q.number] || { target: 5, lowerBetter: true, unit: '%' };
+    const groupIdx = heatGroups.findIndex(g => g.ids.includes(q.number));
+    return { ...q, t, groupIdx };
+  });
+
+  /* 熱力矩陣 SVG 參數 */
+  const hmW = 380, hmH = 260;
+  const hmPadL = 100, hmPadT = 40, hmPadR = 20, hmPadB = 10;
+  const cols = heatGroups.length;
+  const rows = heatRows.length;
+  const cellW = (hmW - hmPadL - hmPadR) / cols;
+  const cellH = (hmH - hmPadT - hmPadB) / rows;
+
+  const getHeatColor = (rate: number | null, target: number) => {
+    if (rate === null) return '#1e293b';
+    const ratio = rate / target;
+    if (ratio <= 0.5) return '#065f46';    // 深綠
+    if (ratio <= 1.0) return '#10b981';    // 綠
+    if (ratio <= 1.5) return '#f59e0b';    // 黃
+    return '#ef4444';                       // 紅
+  };
+
+  return (
+    <div className="space-y-6">
+      <PanelHeader icon={Scissors} color="from-amber-600 to-orange-500" title="手術儀表" sub="半圓儀表 · 感染熱力矩陣 · 8 項手術品質指標一覽" />
+
+      {/* 上排：半圓儀表 × 8 + 燈號 */}
+      <div className="grid grid-cols-2 md:grid-cols-5 lg:grid-cols-9 gap-3">
+        {items.map(q => {
+          const t = targets[q.number] || { target: 5, lowerBetter: true, unit: '%' };
+          return (
+            <div key={q.id} className="bg-slate-900/60 border border-slate-800/50 rounded-2xl p-3 flex flex-col items-center">
+              <SurgeryDonut value={q.rate} target={t.target} lowerBetter={t.lowerBetter} label={q.name} unitLabel={t.unit} size={110} />
+              {q.numerator !== null && (
+                <p className="text-[10px] text-slate-500 mt-1">{q.numerator} / {q.denominator}</p>
+              )}
+            </div>
+          );
+        })}
+        {/* 燈號統計 */}
+        <div className="bg-slate-900/60 border border-slate-800/50 rounded-2xl p-3 flex flex-col items-center justify-center">
+          <h3 className="text-xs font-semibold text-slate-300 mb-3">8 項燈號</h3>
+          <div className="flex gap-3">
+            <div className="text-center">
+              <div className="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center mb-1 mx-auto">
+                <span className="text-sm font-extrabold text-emerald-400">{greenCount}</span>
+              </div>
+              <span className="text-[10px] text-emerald-400">達標</span>
+            </div>
+            <div className="text-center">
+              <div className="w-8 h-8 rounded-full bg-amber-400/20 flex items-center justify-center mb-1 mx-auto">
+                <span className="text-sm font-extrabold text-amber-400">{yellowCount}</span>
+              </div>
+              <span className="text-[10px] text-amber-400">注意</span>
+            </div>
+            <div className="text-center">
+              <div className="w-8 h-8 rounded-full bg-red-500/20 flex items-center justify-center mb-1 mx-auto">
+                <span className="text-sm font-extrabold text-red-400">{redCount}</span>
+              </div>
+              <span className="text-[10px] text-red-400">警戒</span>
+            </div>
+          </div>
+          <p className="text-[9px] text-slate-500 mt-2">🟢 ≤目標 🟡 ≤1.5× 🔴 &gt;1.5×</p>
+        </div>
+      </div>
+
+      {/* 下排：感染熱力矩陣 + 水平柱狀 */}
+      <div className="grid md:grid-cols-2 gap-4">
+        {/* 感染熱力矩陣 */}
+        <div className="bg-slate-900/60 border border-slate-800/50 rounded-2xl p-6 flex flex-col items-center">
+          <h3 className="text-sm font-semibold text-slate-300 mb-3">感染率熱力矩陣</h3>
+          <svg width={hmW} height={hmH} viewBox={`0 0 ${hmW} ${hmH}`}>
+            {/* 欄頭 */}
+            {heatGroups.map((g, ci) => (
+              <text key={`col-${ci}`}
+                x={hmPadL + cellW * ci + cellW / 2} y={hmPadT - 10}
+                textAnchor="middle" className="fill-slate-400 text-[10px] font-semibold">
+                {g.label}
+              </text>
+            ))}
+            {/* 行標籤 + 格子 */}
+            {heatRows.map((q, ri) => (
+              <g key={q.id}>
+                {/* 行標籤 */}
+                <text x={hmPadL - 6} y={hmPadT + cellH * ri + cellH / 2 + 3}
+                  textAnchor="end" className="fill-slate-400 text-[10px]">
+                  {q.number} {q.name.length > 5 ? q.name.substring(0, 5) + '..' : q.name}
+                </text>
+                {/* 每列格子 */}
+                {heatGroups.map((g, ci) => {
+                  const belongs = g.ids.includes(q.number);
+                  const bg = belongs ? getHeatColor(q.rate, q.t.target) : '#0f172a';
+                  return (
+                    <g key={`${q.id}-${ci}`}>
+                      <rect
+                        x={hmPadL + cellW * ci + 2} y={hmPadT + cellH * ri + 1}
+                        width={cellW - 4} height={cellH - 2}
+                        rx={4} fill={bg} stroke="#1e293b" strokeWidth={1}
+                        opacity={belongs ? 1 : 0.3}
+                      />
+                      {belongs && q.rate !== null && (
+                        <text
+                          x={hmPadL + cellW * ci + cellW / 2}
+                          y={hmPadT + cellH * ri + cellH / 2 + 4}
+                          textAnchor="middle" className="fill-white text-[10px] font-bold">
+                          {q.rate}{q.t.unit}
+                        </text>
+                      )}
+                      {belongs && q.rate === null && (
+                        <text
+                          x={hmPadL + cellW * ci + cellW / 2}
+                          y={hmPadT + cellH * ri + cellH / 2 + 4}
+                          textAnchor="middle" className="fill-slate-500 text-[10px]">
+                          --
+                        </text>
+                      )}
+                    </g>
+                  );
+                })}
+              </g>
+            ))}
+          </svg>
+          <div className="flex items-center gap-3 mt-2 text-[10px]">
+            <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-sm inline-block" style={{ background: '#065f46' }} /> 優良(&le;50%)</span>
+            <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-sm inline-block" style={{ background: '#10b981' }} /> 達標</span>
+            <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-sm inline-block" style={{ background: '#f59e0b' }} /> 注意</span>
+            <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-sm inline-block" style={{ background: '#ef4444' }} /> 警戒</span>
+          </div>
+        </div>
+
+        {/* 全指標水平柱狀 */}
+        <div className="bg-slate-900/60 border border-slate-800/50 rounded-2xl p-6">
+          <h3 className="text-sm font-semibold text-slate-300 mb-4">各指標達成狀態</h3>
+          <div className="space-y-3">
+            {items.map(q => {
+              const t = targets[q.number] || { target: 5, lowerBetter: true, unit: '%' };
+              const val = q.rate;
+              const isGood = val !== null ? val <= t.target : false;
+              const barColor = val === null ? '#475569' : isGood ? '#10b981' : '#f59e0b';
+              const barMax = t.unit === '次' ? 10 : 20; // 次的最大刻度用 10，% 用 20
+              const pct = val !== null ? Math.min((val / barMax) * 100, 100) : 0;
+              const targetPct = Math.min((t.target / barMax) * 100, 100);
+
+              return (
+                <div key={q.id}>
+                  <div className="flex items-center justify-between mb-1">
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-800 text-slate-400">{q.number}</span>
+                      <span className="text-xs text-slate-300">{q.name}</span>
+                    </div>
+                    <span className="text-xs font-bold tabular-nums" style={{ color: barColor }}>
+                      {val !== null ? `${val}${t.unit}` : '--'}
+                    </span>
+                  </div>
+                  <div className="relative h-4 bg-slate-800 rounded-full overflow-hidden">
+                    <div className="absolute inset-y-0 left-0 rounded-full transition-all duration-700"
+                      style={{ width: `${pct}%`, background: barColor }}
+                    />
+                    <div className="absolute inset-y-0 w-0.5 bg-slate-400"
+                      style={{ left: `${targetPct}%` }}
+                    />
+                  </div>
+                  <div className="flex justify-between mt-0.5">
+                    <span className="text-[9px] text-slate-500">越低越好</span>
+                    <span className="text-[9px] text-slate-500">目標: ≤{t.target}{t.unit}</span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+
+      {/* 說明 */}
+      <div className="bg-slate-900/40 border border-slate-800/30 rounded-xl p-4 flex items-start gap-3">
+        <div className="w-8 h-8 rounded-lg bg-slate-800 flex items-center justify-center shrink-0 mt-0.5">
+          <Activity className="w-4 h-4 text-slate-400" />
+        </div>
+        <div>
+          <p className="text-sm font-medium text-slate-300 mb-1">圖表說明</p>
+          <p className="text-xs text-slate-500 leading-relaxed">
+            手術品質 8 項指標皆為「越低越好」。指標 13（體外震波碎石）的單位為「次」，其餘皆為 %。
+            左下熱力矩陣依照感染類型分群：膝關節感染（15-1~15-3）、傷口感染（16, 19）、抗生素（12）、其他（13, 14）。
+            色塚深淺表示嚴重度：深綠=優良、綠=達標、橘=注意、紅=警戒。右下水平柱狀的白線為目標位置。
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* 手術儀表半圓儀表（支援自訂單位） */
+function SurgeryDonut({ value, target, lowerBetter, label, unitLabel = '%', size = 110 }: {
+  value: number | null; target: number; lowerBetter: boolean; label: string; unitLabel?: string; size?: number;
+}) {
+  const strokeWidth = 11;
+  const radius = (size - strokeWidth) / 2;
+  const circumference = Math.PI * radius;
+
+  const isGood = value !== null ? (lowerBetter ? value <= target : value >= target) : false;
+  const pct = value !== null
+    ? (lowerBetter
+        ? Math.max(0, Math.min(1, 1 - (value / (target * 2))))
+        : Math.max(0, Math.min(1, value / target)))
+    : 0;
+  const offset = circumference * (1 - pct);
+  const signal = value === null ? '#475569' : isGood ? '#10b981' : '#f59e0b';
+
+  return (
+    <div className="flex flex-col items-center">
+      <svg width={size} height={size / 2 + 10} viewBox={`0 0 ${size} ${size / 2 + 10}`}>
+        <path
+          d={`M ${strokeWidth / 2} ${size / 2} A ${radius} ${radius} 0 0 1 ${size - strokeWidth / 2} ${size / 2}`}
+          fill="none" stroke="#1e293b" strokeWidth={strokeWidth} strokeLinecap="round"
+        />
+        <path
+          d={`M ${strokeWidth / 2} ${size / 2} A ${radius} ${radius} 0 0 1 ${size - strokeWidth / 2} ${size / 2}`}
+          fill="none" stroke={signal} strokeWidth={strokeWidth} strokeLinecap="round"
+          strokeDasharray={circumference}
+          strokeDashoffset={offset}
+          className="transition-all duration-1000 ease-out"
+          style={{ filter: `drop-shadow(0 0 6px ${signal}66)` }}
+        />
+      </svg>
+      <div className="-mt-5 text-center">
+        <span className="text-lg font-extrabold tabular-nums" style={{ color: signal }}>
+          {value !== null ? `${value}${unitLabel}` : '--'}
+        </span>
+      </div>
+      <p className="text-[9px] text-slate-400 mt-1 text-center leading-tight">{label.length > 8 ? label.substring(0, 8) + '..' : label}</p>
+      <p className="text-[8px] text-slate-500">目標: ≤{target}{unitLabel}</p>
     </div>
   );
 }
