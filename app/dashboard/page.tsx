@@ -58,6 +58,7 @@ const PANELS = [
   { id: 'surgery',    label: '手術品質' },
   { id: 'surgery-gauge', label: '手術儀表' },
   { id: 'outcome',    label: '結果品質' },
+  { id: 'outcome-gauge', label: '結果儀表' },
   { id: 'esg',        label: 'ESG' },
 ] as const;
 
@@ -247,6 +248,7 @@ export default function DashboardPage() {
           {currentPanel.id === 'outpatient-gauge' && <OutpatientGaugePanel items={qualityByCategory('outpatient')} />}
           {currentPanel.id === 'inpatient-gauge' && <InpatientGaugePanel items={qualityByCategory('inpatient')} />}
           {currentPanel.id === 'surgery-gauge' && <SurgeryGaugePanel items={qualityByCategory('surgery')} />}
+          {currentPanel.id === 'outcome-gauge' && <OutcomeGaugePanel items={qualityByCategory('outcome')} />}
 
           {['medication', 'outpatient', 'inpatient', 'surgery', 'outcome'].includes(currentPanel.id) && (
             <QualityPanel
@@ -1697,6 +1699,203 @@ function SurgeryGaugePanel({ items }: { items: QualityIndicator[] }) {
             手術品質 8 項指標皆為「越低越好」。指標 13（體外震波碎石）的單位為「次」，其餘皆為 %。
             左下熱力矩陣依照感染類型分群：膝關節感染（15-1~15-3）、傷口感染（16, 19）、抗生素（12）、其他（13, 14）。
             色塚深淺表示嚴重度：深綠=優良、綠=達標、橘=注意、紅=警戒。右下水平柱狀的白線為目標位置。
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─── 結果品質儀表面板 ─── */
+function OutcomeGaugePanel({ items }: { items: QualityIndicator[] }) {
+  const targets: Record<string, { target: number; lowerBetter: boolean }> = {
+    '17': { target: 5,  lowerBetter: true },   // 急性心肌梨塞死亡率 越低越好
+    '18': { target: 60, lowerBetter: false },   // 失智症安寧療護利用率 越高越好
+  };
+
+  const q17 = items.find(q => q.number === '17');
+  const q18 = items.find(q => q.number === '18');
+  const t17 = targets['17'];
+  const t18 = targets['18'];
+
+  const getSignal = (q: QualityIndicator | undefined, t: { target: number; lowerBetter: boolean }) => {
+    if (!q || q.rate === null) return 'gray';
+    const good = t.lowerBetter ? q.rate <= t.target : q.rate >= t.target;
+    if (good) return 'green';
+    const warn = t.lowerBetter ? q.rate <= t.target * 1.5 : q.rate >= t.target * 0.7;
+    return warn ? 'yellow' : 'red';
+  };
+  const s17 = getSignal(q17, t17);
+  const s18 = getSignal(q18, t18);
+  const signalColor: Record<string, string> = { green: '#10b981', yellow: '#f59e0b', red: '#ef4444', gray: '#475569' };
+  const signalLabel: Record<string, string> = { green: '達標', yellow: '注意', red: '警戒', gray: '無數據' };
+
+  /* 大垊圓儀表 SVG */
+  const renderBigDonut = (q: QualityIndicator | undefined, t: { target: number; lowerBetter: boolean }) => {
+    const size = 180;
+    const sw = 14;
+    const radius = (size - sw) / 2;
+    const circ = Math.PI * radius;
+    const value = q?.rate ?? null;
+    const isGood = value !== null ? (t.lowerBetter ? value <= t.target : value >= t.target) : false;
+    const pct = value !== null
+      ? (t.lowerBetter
+          ? Math.max(0, Math.min(1, 1 - (value / (t.target * 2))))
+          : Math.max(0, Math.min(1, value / t.target)))
+      : 0;
+    const offset = circ * (1 - pct);
+    const color = value === null ? '#475569' : isGood ? '#10b981' : '#f59e0b';
+    return (
+      <svg width={size} height={size / 2 + 12} viewBox={`0 0 ${size} ${size / 2 + 12}`}>
+        <path d={`M ${sw / 2} ${size / 2} A ${radius} ${radius} 0 0 1 ${size - sw / 2} ${size / 2}`}
+          fill="none" stroke="#1e293b" strokeWidth={sw} strokeLinecap="round" />
+        <path d={`M ${sw / 2} ${size / 2} A ${radius} ${radius} 0 0 1 ${size - sw / 2} ${size / 2}`}
+          fill="none" stroke={color} strokeWidth={sw} strokeLinecap="round"
+          strokeDasharray={circ} strokeDashoffset={offset}
+          className="transition-all duration-1000 ease-out"
+          style={{ filter: `drop-shadow(0 0 8px ${color}66)` }} />
+      </svg>
+    );
+  };
+
+  /* 垂直溫度計 SVG */
+  const renderThermometer = (q: QualityIndicator | undefined, t: { target: number; lowerBetter: boolean }) => {
+    const w = 50, h = 160, pad = 10;
+    const barW = 20;
+    const maxVal = t.lowerBetter ? t.target * 2 : 100;
+    const value = q?.rate ?? 0;
+    const fillH = Math.min((value / maxVal), 1) * (h - pad * 2);
+    const targetY = pad + (h - pad * 2) * (1 - t.target / maxVal);
+    const isGood = q?.rate !== null && q?.rate !== undefined
+      ? (t.lowerBetter ? q.rate <= t.target : q.rate >= t.target) : false;
+    const color = q?.rate === null || q?.rate === undefined ? '#475569' : isGood ? '#10b981' : '#f59e0b';
+    return (
+      <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`}>
+        <rect x={(w - barW) / 2} y={pad} width={barW} height={h - pad * 2} rx={10} fill="#1e293b" />
+        <rect x={(w - barW) / 2} y={pad + (h - pad * 2) - fillH} width={barW} height={Math.max(fillH, 2)} rx={10}
+          fill={color} className="transition-all duration-700" />
+        <line x1={4} y1={targetY} x2={w - 4} y2={targetY}
+          stroke="#94a3b8" strokeWidth={1.5} strokeDasharray="4 3" />
+        <text x={w - 2} y={targetY - 4} textAnchor="end" className="fill-slate-400 text-[9px]">
+          {t.lowerBetter ? '≤' : '≥'}{t.target}%
+        </text>
+      </svg>
+    );
+  };
+
+  /* 蝴蝶對比圖 SVG */
+  const bfW = 500, bfH = 140;
+  const bfMid = bfW / 2;
+  const bfPadY = 30, bfBarH = 28;
+  const bfMaxLeft = 10; // 死亡率最大刻度
+  const bfMaxRight = 100; // 利用率最大刻度
+  const bfHalfW = bfMid - 40;
+
+  const v17 = q17?.rate ?? 0;
+  const v18 = q18?.rate ?? 0;
+  const bar17W = Math.min((v17 / bfMaxLeft), 1) * bfHalfW;
+  const bar18W = Math.min((v18 / bfMaxRight), 1) * bfHalfW;
+  const tgt17W = Math.min((t17.target / bfMaxLeft), 1) * bfHalfW;
+  const tgt18W = Math.min((t18.target / bfMaxRight), 1) * bfHalfW;
+  const is17Good = q17?.rate !== null && q17?.rate !== undefined && q17.rate <= t17.target;
+  const is18Good = q18?.rate !== null && q18?.rate !== undefined && q18.rate >= t18.target;
+  const c17 = q17?.rate === null || q17?.rate === undefined ? '#475569' : is17Good ? '#10b981' : '#f59e0b';
+  const c18 = q18?.rate === null || q18?.rate === undefined ? '#475569' : is18Good ? '#10b981' : '#f59e0b';
+
+  return (
+    <div className="space-y-6">
+      <PanelHeader icon={HeartPulse} color="from-rose-600 to-pink-500" title="結果儀表" sub="雙指標深度對比 · 蝴蝶圖 · 2 項結果品質指標" />
+
+      {/* 上排：雙欄大型指標卡 */}
+      <div className="grid md:grid-cols-2 gap-4">
+        {[{ q: q17, t: t17, sig: s17, dir: '↓ 越低越好' },
+          { q: q18, t: t18, sig: s18, dir: '↑ 越高越好' }].map(({ q, t, sig, dir }) => (
+          <div key={q?.id || 'empty'} className="bg-slate-900/60 border border-slate-800/50 rounded-2xl p-6 flex flex-col items-center">
+            <div className="flex items-center gap-2 mb-2">
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-slate-800 text-slate-400">{q?.number}</span>
+              <span className="text-sm font-semibold text-slate-200">{q?.name || '--'}</span>
+            </div>
+            {/* 大半圓儀表 */}
+            {renderBigDonut(q, t)}
+            <div className="-mt-8 text-center mb-3">
+              <span className="text-3xl font-extrabold tabular-nums" style={{ color: signalColor[sig] }}>
+                {q?.rate !== null && q?.rate !== undefined ? `${q.rate}%` : '--'}
+              </span>
+            </div>
+            {/* 溫度計 + 資訊 */}
+            <div className="flex items-center gap-6">
+              {renderThermometer(q, t)}
+              <div className="space-y-2">
+                <p className="text-xs text-slate-400">目標: {t.lowerBetter ? '≤' : '≥'}{t.target}%</p>
+                <p className="text-xs text-slate-400">{dir}</p>
+                {q?.numerator !== null && q?.numerator !== undefined && (
+                  <p className="text-xs text-slate-500">分子/分母: {q.numerator} / {q.denominator}</p>
+                )}
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 rounded-full" style={{ background: signalColor[sig] }} />
+                  <span className="text-xs font-semibold" style={{ color: signalColor[sig] }}>{signalLabel[sig]}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* 下排：蝴蝶對比圖 */}
+      <div className="bg-slate-900/60 border border-slate-800/50 rounded-2xl p-6 flex flex-col items-center">
+        <h3 className="text-sm font-semibold text-slate-300 mb-4">雙向對比圖 — 死亡率壓低 ← → 安寧利用拉高</h3>
+        <svg width={bfW} height={bfH} viewBox={`0 0 ${bfW} ${bfH}`}>
+          {/* 中軸 */}
+          <line x1={bfMid} y1={10} x2={bfMid} y2={bfH - 10} stroke="#334155" strokeWidth={1} />
+
+          {/* 左側標題 */}
+          <text x={bfMid - 10} y={20} textAnchor="end" className="fill-slate-400 text-[11px] font-semibold">← 死亡率 (越低越好)</text>
+          {/* 右側標題 */}
+          <text x={bfMid + 10} y={20} textAnchor="start" className="fill-slate-400 text-[11px] font-semibold">安寧利用率 (越高越好) →</text>
+
+          {/* 實際值行 */}
+          <text x={bfMid - bfHalfW - 30} y={bfPadY + bfBarH / 2 + 4} textAnchor="start" className="fill-slate-400 text-[10px]">本院</text>
+          {/* 左柱 - 死亡率 */}
+          <rect x={bfMid - 6 - bar17W} y={bfPadY} width={Math.max(bar17W, 2)} height={bfBarH} rx={4} fill={c17} className="transition-all duration-700" />
+          <text x={bfMid - 10 - bar17W} y={bfPadY + bfBarH / 2 + 4} textAnchor="end" className="fill-white text-[11px] font-bold">
+            {q17?.rate !== null && q17?.rate !== undefined ? `${q17.rate}%` : '--'}
+          </text>
+          {/* 右柱 - 安寧利用率 */}
+          <rect x={bfMid + 6} y={bfPadY} width={Math.max(bar18W, 2)} height={bfBarH} rx={4} fill={c18} className="transition-all duration-700" />
+          <text x={bfMid + 14 + bar18W} y={bfPadY + bfBarH / 2 + 4} textAnchor="start" className="fill-white text-[11px] font-bold">
+            {q18?.rate !== null && q18?.rate !== undefined ? `${q18.rate}%` : '--'}
+          </text>
+
+          {/* 目標值行 */}
+          <text x={bfMid - bfHalfW - 30} y={bfPadY + bfBarH + 20 + bfBarH / 2 + 4} textAnchor="start" className="fill-slate-500 text-[10px]">目標</text>
+          {/* 左柱 - 目標 */}
+          <rect x={bfMid - 6 - tgt17W} y={bfPadY + bfBarH + 20} width={Math.max(tgt17W, 2)} height={bfBarH} rx={4} fill="#64748b" opacity={0.4} />
+          <text x={bfMid - 10 - tgt17W} y={bfPadY + bfBarH + 20 + bfBarH / 2 + 4} textAnchor="end" className="fill-slate-400 text-[10px]">
+            ≤5%
+          </text>
+          {/* 右柱 - 目標 */}
+          <rect x={bfMid + 6} y={bfPadY + bfBarH + 20} width={Math.max(tgt18W, 2)} height={bfBarH} rx={4} fill="#64748b" opacity={0.4} />
+          <text x={bfMid + 14 + tgt18W} y={bfPadY + bfBarH + 20 + bfBarH / 2 + 4} textAnchor="start" className="fill-slate-400 text-[10px]">
+            ≥60%
+          </text>
+        </svg>
+        <div className="flex items-center gap-6 mt-3 text-[10px]">
+          <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-sm inline-block" style={{ background: '#10b981' }} /> 達標</span>
+          <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-sm inline-block" style={{ background: '#f59e0b' }} /> 未達標</span>
+          <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-sm bg-slate-600/40 inline-block" /> 目標值</span>
+        </div>
+      </div>
+
+      {/* 說明 */}
+      <div className="bg-slate-900/40 border border-slate-800/30 rounded-xl p-4 flex items-start gap-3">
+        <div className="w-8 h-8 rounded-lg bg-slate-800 flex items-center justify-center shrink-0 mt-0.5">
+          <Activity className="w-4 h-4 text-slate-400" />
+        </div>
+        <div>
+          <p className="text-sm font-medium text-slate-300 mb-1">圖表說明</p>
+          <p className="text-xs text-slate-500 leading-relaxed">
+            結果品質僅有 2 項指標，方向性相反：指標 17 急性心肌梨塞死亡率「越低越好」，指標 18 失智症安寧療護利用率「越高越好」。
+            上方大型卡片含放大半圓儀表與垂直溫度計，下方蝴蝶對比圖左右展示「死亡率壓低 ← → 安寧利用拉高」的雙向品質目標。
           </p>
         </div>
       </div>
