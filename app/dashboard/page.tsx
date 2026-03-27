@@ -60,6 +60,7 @@ const PANELS = [
   { id: 'outcome',    label: '結果品質' },
   { id: 'outcome-gauge', label: '結果儀表' },
   { id: 'esg',        label: 'ESG' },
+  { id: 'esg-gauge',   label: 'ESG 儀表' },
 ] as const;
 
 const ROTATE_INTERVAL = 5000;
@@ -244,6 +245,7 @@ export default function DashboardPage() {
           {currentPanel.id === 'health' && <HealthPanel items={healthIndicators} />}
           {currentPanel.id === 'health-gauge' && <HealthGaugePanel items={healthIndicators} />}
           {currentPanel.id === 'esg' && <ESGPanel items={esgIndicators} />}
+          {currentPanel.id === 'esg-gauge' && <ESGGaugePanel items={esgIndicators} />}
           {currentPanel.id === 'med-gauge' && <MedicationGaugePanel items={qualityByCategory('medication')} />}
           {currentPanel.id === 'outpatient-gauge' && <OutpatientGaugePanel items={qualityByCategory('outpatient')} />}
           {currentPanel.id === 'inpatient-gauge' && <InpatientGaugePanel items={qualityByCategory('inpatient')} />}
@@ -802,6 +804,191 @@ function ESGPanel({ items }: { items: ESGIndicator[] }) {
             </div>
           </div>
         ))}
+      </div>
+    </div>
+  );
+}
+
+/* ─── ESG 儀表面板 ─── */
+function ESGGaugePanel({ items }: { items: ESGIndicator[] }) {
+  /* ESG 三支柱對應 */
+  const pillars: { key: string; pillar: string; label: string; color: string; lowerBetter: boolean; target: number }[] = [
+    { key: 'waste',      pillar: 'E', label: 'Environment 環境', color: '#10b981', lowerBetter: false, target: 60 },
+    { key: 'antibiotic', pillar: 'S', label: 'Social 社會',      color: '#3b82f6', lowerBetter: true,  target: 20 },
+    { key: 'ehr',        pillar: 'G', label: 'Governance 治理',  color: '#8b5cf6', lowerBetter: false, target: 80 },
+  ];
+
+  const mapped = pillars.map(p => {
+    const item = items.find(i => i.id === p.key);
+    const rate = item?.rate ?? null;
+    const isGood = rate !== null
+      ? (p.lowerBetter ? rate <= p.target : rate >= p.target)
+      : false;
+    const signal = rate === null ? 'gray' : isGood ? 'green'
+      : (p.lowerBetter ? rate <= p.target * 1.5 : rate >= p.target * 0.7) ? 'yellow' : 'red';
+    return { ...p, item, rate, isGood, signal };
+  });
+
+  const signalColor: Record<string, string> = { green: '#10b981', yellow: '#f59e0b', red: '#ef4444', gray: '#475569' };
+  const signalText: Record<string, string> = { green: '達標', yellow: '注意', red: '警戒', gray: '無數據' };
+
+  /* 三角雷達圖 SVG */
+  const radarSize = 280;
+  const radarCx = radarSize / 2;
+  const radarCy = radarSize / 2;
+  const radarR = radarSize * 0.36;
+  const angles = [-Math.PI / 2, -Math.PI / 2 + (2 * Math.PI / 3), -Math.PI / 2 + (4 * Math.PI / 3)];
+  const getPoint = (i: number, ratio: number) => ({
+    x: radarCx + radarR * ratio * Math.cos(angles[i]),
+    y: radarCy + radarR * ratio * Math.sin(angles[i]),
+  });
+  const gridLevels = [0.25, 0.5, 0.75, 1.0];
+
+  /* 雷達圖值（S 越低越好需反轉） */
+  const radarValues = mapped.map(m => {
+    if (m.rate === null) return 0;
+    return m.lowerBetter ? Math.max(0, 100 - m.rate) : m.rate;
+  });
+  const radarTargets = mapped.map(m => {
+    return m.lowerBetter ? Math.max(0, 100 - m.target) : m.target;
+  });
+
+  const valuePolygon = radarValues.map((v, i) => {
+    const p = getPoint(i, v / 100);
+    return `${p.x},${p.y}`;
+  }).join(' ');
+  const targetPolygon = radarTargets.map((v, i) => {
+    const p = getPoint(i, v / 100);
+    return `${p.x},${p.y}`;
+  }).join(' ');
+
+  return (
+    <div className="space-y-6">
+      <PanelHeader icon={Leaf} color="from-emerald-600 to-teal-500" title="ESG 儀表" sub="三支柱環形圖 · 三角雷達 · 3 項永續指標" />
+
+      {/* 上排：三支柱環形大卡 */}
+      <div className="grid md:grid-cols-3 gap-4">
+        {mapped.map(m => {
+          const rate = m.rate;
+          const ringSize = 160;
+          const sw = 14;
+          const radius = (ringSize - sw) / 2;
+          const circ = 2 * Math.PI * radius;
+          const pct = rate !== null ? Math.max(0, Math.min(1, rate / 100)) : 0;
+          const offset = circ * (1 - pct);
+
+          return (
+            <div key={m.key} className="bg-slate-900/60 border border-slate-800/50 rounded-2xl p-6 flex flex-col items-center">
+              {/* 支柱標題 */}
+              <div className="flex items-center gap-2 mb-3">
+                <div className="w-8 h-8 rounded-lg flex items-center justify-center text-sm font-extrabold text-white"
+                  style={{ background: m.color }}>{m.pillar}</div>
+                <span className="text-sm font-semibold text-slate-300">{m.label}</span>
+              </div>
+              {/* 完整圓環 */}
+              <svg width={ringSize} height={ringSize} viewBox={`0 0 ${ringSize} ${ringSize}`}>
+                <circle cx={ringSize / 2} cy={ringSize / 2} r={radius}
+                  fill="none" stroke="#1e293b" strokeWidth={sw} />
+                <circle cx={ringSize / 2} cy={ringSize / 2} r={radius}
+                  fill="none" stroke={m.color} strokeWidth={sw}
+                  strokeLinecap="round"
+                  strokeDasharray={circ} strokeDashoffset={offset}
+                  transform={`rotate(-90 ${ringSize / 2} ${ringSize / 2})`}
+                  className="transition-all duration-1000 ease-out"
+                  style={{ filter: `drop-shadow(0 0 8px ${m.color}55)` }} />
+                <text x={ringSize / 2} y={ringSize / 2 - 6} textAnchor="middle" dominantBaseline="middle"
+                  className="fill-white text-2xl font-extrabold">
+                  {rate !== null ? `${rate}` : '--'}
+                </text>
+                <text x={ringSize / 2} y={ringSize / 2 + 16} textAnchor="middle"
+                  className="fill-slate-400 text-[11px]">
+                  {m.item?.unit || '%'}
+                </text>
+              </svg>
+              {/* 資訊 */}
+              <p className="text-sm font-semibold text-white mt-2">{m.item?.name || '--'}</p>
+              <p className="text-[10px] text-slate-400 mt-1">
+                {m.item?.rateLabel}: {rate !== null ? `${rate}${m.item?.unit}` : '--'}
+              </p>
+              <p className="text-[10px] text-slate-400">
+                {m.item?.countLabel}: {m.item?.count !== null && m.item?.count !== undefined ? m.item.count.toLocaleString() : '--'}
+              </p>
+              <p className="text-[10px] text-slate-500 mt-1">
+                目標: {m.lowerBetter ? '≤' : '≥'}{m.target}%　{m.lowerBetter ? '↓越低越好' : '↑越高越好'}
+              </p>
+              <div className="flex items-center gap-2 mt-2">
+                <div className="w-3 h-3 rounded-full" style={{ background: signalColor[m.signal] }} />
+                <span className="text-xs font-semibold" style={{ color: signalColor[m.signal] }}>{signalText[m.signal]}</span>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* 下排：ESG 三角雷達圖 */}
+      <div className="bg-slate-900/60 border border-slate-800/50 rounded-2xl p-6 flex flex-col items-center">
+        <h3 className="text-sm font-semibold text-slate-300 mb-3">ESG 三支柱雷達圖</h3>
+        <svg width={radarSize} height={radarSize} viewBox={`0 0 ${radarSize} ${radarSize}`}>
+          {/* 網格 */}
+          {gridLevels.map(level => (
+            <polygon key={level}
+              points={angles.map((_, i) => { const p = getPoint(i, level); return `${p.x},${p.y}`; }).join(' ')}
+              fill="none" stroke="#334155" strokeWidth={0.5} />
+          ))}
+          {/* 軸線 */}
+          {angles.map((_, i) => {
+            const p = getPoint(i, 1);
+            return <line key={i} x1={radarCx} y1={radarCy} x2={p.x} y2={p.y} stroke="#334155" strokeWidth={0.5} />;
+          })}
+          {/* 目標三角形 */}
+          <polygon points={targetPolygon} fill="rgba(148,163,184,0.08)" stroke="#64748b" strokeWidth={1.5} strokeDasharray="4 3" />
+          {/* 實際值三角形 */}
+          <polygon points={valuePolygon} fill="rgba(16,185,129,0.15)" stroke="#10b981" strokeWidth={2} />
+          {/* 頂點 */}
+          {radarValues.map((v, i) => {
+            const p = getPoint(i, v / 100);
+            return <circle key={i} cx={p.x} cy={p.y} r={5} fill={mapped[i].color} stroke="#1e293b" strokeWidth={2} />;
+          })}
+          {/* 標籤 */}
+          {mapped.map((m, i) => {
+            const p = getPoint(i, 1.22);
+            return (
+              <g key={`label-${i}`}>
+                <text x={p.x} y={p.y - 6} textAnchor="middle" dominantBaseline="middle"
+                  className="text-[12px] font-bold" fill={m.color}>
+                  {m.pillar}
+                </text>
+                <text x={p.x} y={p.y + 8} textAnchor="middle" dominantBaseline="middle"
+                  className="fill-slate-400 text-[10px]">
+                  {m.item?.name ? (m.item.name.length > 6 ? m.item.name.substring(0, 6) + '..' : m.item.name) : '--'}
+                </text>
+                <text x={p.x} y={p.y + 22} textAnchor="middle" dominantBaseline="middle"
+                  className="fill-slate-300 text-[11px] font-bold">
+                  {m.rate !== null ? `${m.rate}%` : '--'}
+                </text>
+              </g>
+            );
+          })}
+        </svg>
+        <div className="flex items-center gap-4 mt-2 text-[10px]">
+          <span className="flex items-center gap-1"><span className="w-3 h-0.5 bg-emerald-500 inline-block rounded" /> 本院</span>
+          <span className="flex items-center gap-1"><span className="w-3 h-0.5 inline-block rounded" style={{ borderTop: '1.5px dashed #64748b', background: 'transparent' }} /> 目標</span>
+          <span className="text-slate-500">S(抗生素)已反轉: 越低越好 → 圖上越高越優</span>
+        </div>
+      </div>
+
+      {/* 說明 */}
+      <div className="bg-slate-900/40 border border-slate-800/30 rounded-xl p-4 flex items-start gap-3">
+        <div className="w-8 h-8 rounded-lg bg-slate-800 flex items-center justify-center shrink-0 mt-0.5">
+          <Leaf className="w-4 h-4 text-emerald-400" />
+        </div>
+        <div>
+          <p className="text-sm font-medium text-slate-300 mb-1">圖表說明</p>
+          <p className="text-xs text-slate-500 leading-relaxed">
+            ESG 三支柱：E(環境)醫療廢棄物回收率越高越好；S(社會)抗生素使用率越低越好；G(治理)電子病歷採用率越高越好。
+            圓環顯示各指標完成度。雷達圖中 S 已反轉（用 100-rate 繪製）以確保三軸都是「越大越優」，讓三角形越大代表 ESG 表現越好。
+          </p>
+        </div>
       </div>
     </div>
   );
