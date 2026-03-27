@@ -54,6 +54,7 @@ const PANELS = [
   { id: 'outpatient', label: '門診品質' },
   { id: 'outpatient-gauge', label: '門診儀表' },
   { id: 'inpatient',  label: '住院品質' },
+  { id: 'inpatient-gauge', label: '住院儀表' },
   { id: 'surgery',    label: '手術品質' },
   { id: 'outcome',    label: '結果品質' },
   { id: 'esg',        label: 'ESG' },
@@ -243,6 +244,7 @@ export default function DashboardPage() {
           {currentPanel.id === 'esg' && <ESGPanel items={esgIndicators} />}
           {currentPanel.id === 'med-gauge' && <MedicationGaugePanel items={qualityByCategory('medication')} />}
           {currentPanel.id === 'outpatient-gauge' && <OutpatientGaugePanel items={qualityByCategory('outpatient')} />}
+          {currentPanel.id === 'inpatient-gauge' && <InpatientGaugePanel items={qualityByCategory('inpatient')} />}
 
           {['medication', 'outpatient', 'inpatient', 'surgery', 'outcome'].includes(currentPanel.id) && (
             <QualityPanel
@@ -1266,6 +1268,208 @@ function OutpatientGaugePanel({ items }: { items: QualityIndicator[] }) {
             半圓儀表顯示各門診指標達成狀態。雷達圖比較 5 項指標與目標值的差距（藍色=本院，虛線=目標）。
             水平柱狀圖逐項顯示達成情形，綠色為達標，橘色為待改善，白線為目標位置。
             指標 04、07 越高越好，指標 05、06、08 越低越好。
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ─── 住院品質儀表面板 ─── */
+function InpatientGaugePanel({ items }: { items: QualityIndicator[] }) {
+  /* 目標值定義（全部越低越好） */
+  const targets: Record<string, { target: number; lowerBetter: boolean }> = {
+    '09':   { target: 8,  lowerBetter: true },   // 14天內非計畫再入院率
+    '10':   { target: 5,  lowerBetter: true },   // 出院後3天內急診率
+    '11-1': { target: 30, lowerBetter: true },   // 整體剖腹產率
+    '11-2': { target: 20, lowerBetter: true },   // 產婦要求剖腹產率
+    '11-3': { target: 35, lowerBetter: true },   // 有適應症剖腹產率
+    '11-4': { target: 20, lowerBetter: true },   // 初產婦剖腹產率
+  };
+
+  /* 燈號統計 */
+  const signals = items.map(q => {
+    const t = targets[q.number];
+    if (q.rate === null || !t) return 'gray';
+    if (q.rate <= t.target) return 'green';
+    if (q.rate <= t.target * 1.5) return 'yellow';
+    return 'red';
+  });
+  const greenCount  = signals.filter(s => s === 'green').length;
+  const yellowCount = signals.filter(s => s === 'yellow').length;
+  const redCount    = signals.filter(s => s === 'red').length;
+
+  /* 剖腹產子群 (11-1 ~ 11-4) */
+  const cesareanItems = items.filter(q => q.number.startsWith('11'));
+  const nonCesareanItems = items.filter(q => !q.number.startsWith('11'));
+
+  /* 分組柱狀圖 SVG 參數 */
+  const barW = 360, barH = 220;
+  const barPadX = 60, barPadTop = 20, barPadBot = 40;
+  const chartW = barW - barPadX * 2;
+  const chartH = barH - barPadTop - barPadBot;
+  const maxY = 50; // y 軸最大值 %
+  const groupGap = chartW / cesareanItems.length;
+  const colW = groupGap * 0.3;
+
+  return (
+    <div className="space-y-6">
+      <PanelHeader icon={BedDouble} color="from-violet-600 to-purple-500" title="住院儀表" sub="半圓儀表 · 剖腹產對比 · 6 項住院品質指標一覽" />
+
+      {/* 上排：半圓儀表 × 6 + 燈號 */}
+      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
+        {items.map(q => {
+          const t = targets[q.number] || { target: 10, lowerBetter: true };
+          return (
+            <div key={q.id} className="bg-slate-900/60 border border-slate-800/50 rounded-2xl p-4 flex flex-col items-center">
+              <OutpatientDonut value={q.rate} target={t.target} lowerBetter={t.lowerBetter} label={q.name} size={120} />
+              {q.numerator !== null && (
+                <p className="text-[10px] text-slate-500 mt-1">{q.numerator} / {q.denominator}</p>
+              )}
+            </div>
+          );
+        })}
+        {/* 燈號統計 */}
+        <div className="bg-slate-900/60 border border-slate-800/50 rounded-2xl p-4 flex flex-col items-center justify-center">
+          <h3 className="text-xs font-semibold text-slate-300 mb-3">6 項燈號</h3>
+          <div className="flex gap-4">
+            <div className="text-center">
+              <div className="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center mb-1 mx-auto">
+                <span className="text-sm font-extrabold text-emerald-400">{greenCount}</span>
+              </div>
+              <span className="text-[10px] text-emerald-400">達標</span>
+            </div>
+            <div className="text-center">
+              <div className="w-8 h-8 rounded-full bg-amber-400/20 flex items-center justify-center mb-1 mx-auto">
+                <span className="text-sm font-extrabold text-amber-400">{yellowCount}</span>
+              </div>
+              <span className="text-[10px] text-amber-400">注意</span>
+            </div>
+            <div className="text-center">
+              <div className="w-8 h-8 rounded-full bg-red-500/20 flex items-center justify-center mb-1 mx-auto">
+                <span className="text-sm font-extrabold text-red-400">{redCount}</span>
+              </div>
+              <span className="text-[10px] text-red-400">警戒</span>
+            </div>
+          </div>
+          <p className="text-[9px] text-slate-500 mt-2">🟢 ≤目標 🟡 ≤1.5× 🔴 &gt;1.5×</p>
+        </div>
+      </div>
+
+      {/* 下排：剖腹產分組柱狀 + 全指標水平柱狀 */}
+      <div className="grid md:grid-cols-2 gap-4">
+        {/* 剖腹產分組柱狀圖 */}
+        <div className="bg-slate-900/60 border border-slate-800/50 rounded-2xl p-6 flex flex-col items-center">
+          <h3 className="text-sm font-semibold text-slate-300 mb-3">剖腹產群組對比</h3>
+          <svg width={barW} height={barH} viewBox={`0 0 ${barW} ${barH}`}>
+            {/* Y 軸格線 */}
+            {[0, 10, 20, 30, 40, 50].map(v => {
+              const y = barPadTop + chartH * (1 - v / maxY);
+              return (
+                <g key={v}>
+                  <line x1={barPadX} y1={y} x2={barW - barPadX} y2={y} stroke="#334155" strokeWidth={0.5} />
+                  <text x={barPadX - 6} y={y + 3} textAnchor="end" className="fill-slate-500 text-[10px]">{v}%</text>
+                </g>
+              );
+            })}
+            {/* 柱子 */}
+            {cesareanItems.map((q, i) => {
+              const t = targets[q.number] || { target: 30, lowerBetter: true };
+              const cx = barPadX + groupGap * i + groupGap / 2;
+              const val = q.rate !== null ? q.rate : 0;
+              const valH = (val / maxY) * chartH;
+              const tgtH = (t.target / maxY) * chartH;
+              const isGood = q.rate !== null && q.rate <= t.target;
+              const color = q.rate === null ? '#475569' : isGood ? '#10b981' : '#f59e0b';
+              return (
+                <g key={q.id}>
+                  {/* 目標柱（灰色半透明） */}
+                  <rect x={cx - colW - 2} y={barPadTop + chartH - tgtH} width={colW} height={tgtH}
+                    rx={3} fill="#64748b" opacity={0.3} />
+                  {/* 實際值柱 */}
+                  <rect x={cx + 2} y={barPadTop + chartH - valH} width={colW} height={Math.max(valH, 1)}
+                    rx={3} fill={color} className="transition-all duration-700" />
+                  {/* 數字標籤 */}
+                  <text x={cx + 2 + colW / 2} y={barPadTop + chartH - valH - 5}
+                    textAnchor="middle" className="fill-slate-300 text-[10px] font-bold">
+                    {q.rate !== null ? `${q.rate}%` : '--'}
+                  </text>
+                  <text x={cx - colW / 2 - 2} y={barPadTop + chartH - tgtH - 5}
+                    textAnchor="middle" className="fill-slate-500 text-[9px]">
+                    {t.target}%
+                  </text>
+                  {/* X 軸標籤 */}
+                  <text x={cx} y={barH - barPadBot + 14}
+                    textAnchor="middle" className="fill-slate-400 text-[10px]">
+                    {q.name.length > 6 ? q.name.substring(0, 6) + '..' : q.name}
+                  </text>
+                  <text x={cx} y={barH - barPadBot + 26}
+                    textAnchor="middle" className="fill-slate-500 text-[9px]">
+                    {q.number}
+                  </text>
+                </g>
+              );
+            })}
+          </svg>
+          <div className="flex items-center gap-4 mt-2 text-[10px]">
+            <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-sm bg-emerald-500 inline-block" /> 本院</span>
+            <span className="flex items-center gap-1"><span className="w-3 h-3 rounded-sm bg-slate-600/40 inline-block" /> 目標</span>
+          </div>
+        </div>
+
+        {/* 全指標水平柱狀 */}
+        <div className="bg-slate-900/60 border border-slate-800/50 rounded-2xl p-6">
+          <h3 className="text-sm font-semibold text-slate-300 mb-4">各指標達成狀態</h3>
+          <div className="space-y-3">
+            {items.map(q => {
+              const t = targets[q.number] || { target: 10, lowerBetter: true };
+              const val = q.rate;
+              const isGood = val !== null ? val <= t.target : false;
+              const barColor = val === null ? '#475569' : isGood ? '#10b981' : '#f59e0b';
+              const pct = val !== null ? Math.min((val / 50) * 100, 100) : 0;
+              const targetPct = Math.min((t.target / 50) * 100, 100);
+
+              return (
+                <div key={q.id}>
+                  <div className="flex items-center justify-between mb-1">
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-slate-800 text-slate-400">{q.number}</span>
+                      <span className="text-xs text-slate-300">{q.name}</span>
+                    </div>
+                    <span className="text-xs font-bold tabular-nums" style={{ color: barColor }}>
+                      {val !== null ? `${val}%` : '--'}
+                    </span>
+                  </div>
+                  <div className="relative h-4 bg-slate-800 rounded-full overflow-hidden">
+                    <div className="absolute inset-y-0 left-0 rounded-full transition-all duration-700"
+                      style={{ width: `${pct}%`, background: barColor }}
+                    />
+                    <div className="absolute inset-y-0 w-0.5 bg-slate-400"
+                      style={{ left: `${targetPct}%` }}
+                    />
+                  </div>
+                  <div className="flex justify-between mt-0.5">
+                    <span className="text-[9px] text-slate-500">越低越好</span>
+                    <span className="text-[9px] text-slate-500">目標: ≤{t.target}%</span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+
+      {/* 說明 */}
+      <div className="bg-slate-900/40 border border-slate-800/30 rounded-xl p-4 flex items-start gap-3">
+        <div className="w-8 h-8 rounded-lg bg-slate-800 flex items-center justify-center shrink-0 mt-0.5">
+          <Activity className="w-4 h-4 text-slate-400" />
+        </div>
+        <div>
+          <p className="text-sm font-medium text-slate-300 mb-1">圖表說明</p>
+          <p className="text-xs text-slate-500 leading-relaxed">
+            住院品質 6 項指標皆為「越低越好」。半圓儀表以綠色=達標、橘色=注意來呈現。
+            左下分組柱狀圖聚焦剖腹產 4 項子指標（11-1~11-4），藍柱為本院，灰柱為目標。
+            右下水平柱狀圖逐項顯示達成情形，白線為目標位置。
           </p>
         </div>
       </div>
