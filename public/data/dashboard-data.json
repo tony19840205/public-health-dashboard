@@ -1,5 +1,5 @@
 {
-  "exportedAt": "2026-04-03T16:53:51.352Z",
+  "exportedAt": "2026-04-03T17:13:00.541Z",
   "source": "/esg-indicators%20-%20API.html",
   "diseaseItems": [
     {
@@ -318,9 +318,9 @@
       "name": "慢性病連續處方箋使用率",
       "code": "1318",
       "category": "outpatient",
-      "numerator": 0,
-      "denominator": 200,
-      "rate": 0,
+      "numerator": 13,
+      "denominator": 1000,
+      "rate": 1.3,
       "unit": "%"
     },
     {
@@ -585,8 +585,8 @@
       "name": "抗生素使用率",
       "cql": "Antibiotic_Utilization",
       "description": "監測抗生素合理使用與抗藥性管理 (國際算法)",
-      "count": 132,
-      "rate": 96.21,
+      "count": 146,
+      "rate": 86.99,
       "unit": "%",
       "countLabel": "病人數",
       "rateLabel": "使用率"
@@ -596,8 +596,8 @@
       "name": "電子病歷採用率",
       "cql": "EHR_Adoption_Rate",
       "description": "追蹤病歷資料是否以結構化電子格式完整記錄",
-      "count": 42,
-      "rate": 42,
+      "count": 47,
+      "rate": 9.4,
       "unit": "%",
       "countLabel": "病人數",
       "rateLabel": "採用率"
@@ -620,10 +620,10 @@
     "diseaseItems": 5,
     "healthIndicators": 3,
     "esgIndicators": 3,
-    "lastUpdated": "2026-04-03T16:53:51.352Z",
-    "queriedQuality": 39,
+    "lastUpdated": "2026-04-03T17:13:00.542Z",
+    "queriedQuality": 1,
     "queriedDisease": 5,
     "queriedHealth": 3,
-    "queriedESG": 0
+    "queriedESG": 3
   }
 }
