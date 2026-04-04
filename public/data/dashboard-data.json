@@ -1,6 +1,6 @@
 {
-  "exportedAt": "2026-04-04T09:12:06.877Z",
-  "source": "/quality-indicators%20-%20API.html",
+  "exportedAt": "2026-04-04T09:12:45.808Z",
+  "source": "/disease-control%20-%20API.html",
   "diseaseItems": [
     {
       "id": "covid19",
@@ -620,9 +620,9 @@
     "diseaseItems": 5,
     "healthIndicators": 3,
     "esgIndicators": 3,
-    "lastUpdated": "2026-04-04T09:12:06.877Z",
-    "queriedQuality": 0,
-    "queriedDisease": 5,
+    "lastUpdated": "2026-04-04T09:12:45.809Z",
+    "queriedQuality": 1,
+    "queriedDisease": 0,
     "queriedHealth": 3,
     "queriedESG": 3
   }
