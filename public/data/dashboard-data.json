@@ -1,5 +1,5 @@
 {
-  "exportedAt": "2026-04-10T14:48:29.588Z",
+  "exportedAt": "2026-04-11T12:22:03.732Z",
   "source": "/disease-control%20-%20API.html",
   "diseaseItems": [
     {
@@ -665,8 +665,8 @@
     "diseaseItems": 5,
     "healthIndicators": 3,
     "esgIndicators": 3,
-    "lastUpdated": "2026-04-10T14:48:29.589Z",
-    "queriedQuality": 39,
+    "lastUpdated": "2026-04-11T12:22:03.733Z",
+    "queriedQuality": 1,
     "queriedDisease": 5,
     "queriedHealth": 3,
     "queriedESG": 3
