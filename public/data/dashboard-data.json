@@ -1,5 +1,5 @@
 {
-  "exportedAt": "2026-04-11T15:26:02.088Z",
+  "exportedAt": "2026-04-11T15:41:37.553Z",
   "source": "/public-health%20-%20API.html",
   "diseaseItems": [
     {
@@ -665,10 +665,10 @@
     "diseaseItems": 5,
     "healthIndicators": 3,
     "esgIndicators": 3,
-    "lastUpdated": "2026-04-11T15:26:02.088Z",
+    "lastUpdated": "2026-04-11T15:41:37.553Z",
     "queriedQuality": 1,
     "queriedDisease": 5,
-    "queriedHealth": 0,
+    "queriedHealth": 2,
     "queriedESG": 3
   }
 }
