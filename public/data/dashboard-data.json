@@ -1,6 +1,6 @@
 {
-  "exportedAt": "2026-04-11T14:17:20.764Z",
-  "source": "/esg-indicators%20-%20API.html",
+  "exportedAt": "2026-04-11T14:22:02.026Z",
+  "source": "/quality-indicators%20-%20API.html",
   "diseaseItems": [
     {
       "id": "covid19",
@@ -165,9 +165,9 @@
       "name": "門診注射劑使用率",
       "code": "3127",
       "category": "medication",
-      "numerator": null,
-      "denominator": null,
-      "rate": null,
+      "numerator": 41,
+      "denominator": 200,
+      "rate": 20.5,
       "unit": "%"
     },
     {
@@ -176,9 +176,9 @@
       "name": "門診抗生素使用率",
       "code": "1140.01",
       "category": "medication",
-      "numerator": null,
-      "denominator": null,
-      "rate": null,
+      "numerator": 91,
+      "denominator": 200,
+      "rate": 45.5,
       "unit": "%"
     },
     {
@@ -187,9 +187,9 @@
       "name": "同院降血壓藥重疊",
       "code": "1710",
       "category": "medication",
-      "numerator": null,
-      "denominator": null,
-      "rate": null,
+      "numerator": 18,
+      "denominator": 124,
+      "rate": 14.52,
       "unit": "%"
     },
     {
@@ -198,9 +198,9 @@
       "name": "同院降血脂藥重疊",
       "code": "1711",
       "category": "medication",
-      "numerator": null,
-      "denominator": null,
-      "rate": null,
+      "numerator": 66,
+      "denominator": 102,
+      "rate": 64.71,
       "unit": "%"
     },
     {
@@ -209,9 +209,9 @@
       "name": "同院降血糖藥重疊",
       "code": "1712",
       "category": "medication",
-      "numerator": null,
-      "denominator": null,
-      "rate": null,
+      "numerator": 26,
+      "denominator": 98,
+      "rate": 26.53,
       "unit": "%"
     },
     {
@@ -220,9 +220,9 @@
       "name": "同院抗思覺失調藥重疊",
       "code": "1726",
       "category": "medication",
-      "numerator": null,
-      "denominator": null,
-      "rate": null,
+      "numerator": 33,
+      "denominator": 39,
+      "rate": 84.62,
       "unit": "%"
     },
     {
@@ -231,9 +231,9 @@
       "name": "同院抗憂鬱藥重疊",
       "code": "1727",
       "category": "medication",
-      "numerator": null,
-      "denominator": null,
-      "rate": null,
+      "numerator": 30,
+      "denominator": 37,
+      "rate": 81.08,
       "unit": "%"
     },
     {
@@ -242,9 +242,9 @@
       "name": "同院安眠鎮靜藥重疊",
       "code": "1728",
       "category": "medication",
-      "numerator": null,
-      "denominator": null,
-      "rate": null,
+      "numerator": 3,
+      "denominator": 44,
+      "rate": 6.82,
       "unit": "%"
     },
     {
@@ -253,9 +253,9 @@
       "name": "同院抗血栓藥重疊",
       "code": "3375",
       "category": "medication",
-      "numerator": null,
-      "denominator": null,
-      "rate": null,
+      "numerator": 36,
+      "denominator": 55,
+      "rate": 65.45,
       "unit": "%"
     },
     {
@@ -264,9 +264,9 @@
       "name": "同院前列腺藥重疊",
       "code": "3376",
       "category": "medication",
-      "numerator": null,
-      "denominator": null,
-      "rate": null,
+      "numerator": 22,
+      "denominator": 28,
+      "rate": 78.57,
       "unit": "%"
     },
     {
@@ -275,9 +275,9 @@
       "name": "跨院降血壓藥重疊",
       "code": "1713",
       "category": "medication",
-      "numerator": null,
-      "denominator": null,
-      "rate": null,
+      "numerator": 5,
+      "denominator": 124,
+      "rate": 4.03,
       "unit": "%"
     },
     {
@@ -286,9 +286,9 @@
       "name": "跨院降血脂藥重疊",
       "code": "1714",
       "category": "medication",
-      "numerator": null,
-      "denominator": null,
-      "rate": null,
+      "numerator": 4,
+      "denominator": 102,
+      "rate": 3.92,
       "unit": "%"
     },
     {
@@ -297,9 +297,9 @@
       "name": "跨院降血糖藥重疊",
       "code": "1715",
       "category": "medication",
-      "numerator": null,
-      "denominator": null,
-      "rate": null,
+      "numerator": 4,
+      "denominator": 98,
+      "rate": 4.08,
       "unit": "%"
     },
     {
@@ -308,9 +308,9 @@
       "name": "跨院抗思覺失調藥重疊",
       "code": "1729",
       "category": "medication",
-      "numerator": null,
-      "denominator": null,
-      "rate": null,
+      "numerator": 4,
+      "denominator": 39,
+      "rate": 10.26,
       "unit": "%"
     },
     {
@@ -319,9 +319,9 @@
       "name": "跨院抗憂鬱藥重疊",
       "code": "1730",
       "category": "medication",
-      "numerator": null,
-      "denominator": null,
-      "rate": null,
+      "numerator": 4,
+      "denominator": 37,
+      "rate": 10.81,
       "unit": "%"
     },
     {
@@ -330,9 +330,9 @@
       "name": "跨院安眠鎮靜藥重疊",
       "code": "1731",
       "category": "medication",
-      "numerator": null,
-      "denominator": null,
-      "rate": null,
+      "numerator": 4,
+      "denominator": 44,
+      "rate": 9.09,
       "unit": "%"
     },
     {
@@ -341,9 +341,9 @@
       "name": "跨院抗血栓藥重疊",
       "code": "3377",
       "category": "medication",
-      "numerator": null,
-      "denominator": null,
-      "rate": null,
+      "numerator": 4,
+      "denominator": 55,
+      "rate": 7.27,
       "unit": "%"
     },
     {
@@ -352,9 +352,9 @@
       "name": "跨院前列腺藥重疊",
       "code": "3378",
       "category": "medication",
-      "numerator": null,
-      "denominator": null,
-      "rate": null,
+      "numerator": 4,
+      "denominator": 28,
+      "rate": 14.29,
       "unit": "%"
     },
     {
@@ -363,9 +363,9 @@
       "name": "慢性病連續處方箋使用率",
       "code": "1318",
       "category": "outpatient",
-      "numerator": null,
-      "denominator": null,
-      "rate": null,
+      "numerator": 37,
+      "denominator": 1430,
+      "rate": 2.59,
       "unit": "%"
     },
     {
@@ -374,9 +374,9 @@
       "name": "處方10種以上藥品率",
       "code": "3128",
       "category": "outpatient",
-      "numerator": null,
-      "denominator": null,
-      "rate": null,
+      "numerator": 11,
+      "denominator": 697,
+      "rate": 1.58,
       "unit": "%"
     },
     {
@@ -385,9 +385,9 @@
       "name": "小兒氣喘急診率",
       "code": "1315Q",
       "category": "outpatient",
-      "numerator": null,
-      "denominator": null,
-      "rate": null,
+      "numerator": 8,
+      "denominator": 56660,
+      "rate": 0.01,
       "unit": "%"
     },
     {
@@ -396,9 +396,9 @@
       "name": "糖尿病HbA1c檢驗率",
       "code": "109.01Q",
       "category": "outpatient",
-      "numerator": null,
-      "denominator": null,
-      "rate": null,
+      "numerator": 1,
+      "denominator": 111,
+      "rate": 0.9,
       "unit": "%"
     },
     {
@@ -407,9 +407,9 @@
       "name": "同日同院同疾病再就診率",
       "code": "1322",
       "category": "outpatient",
-      "numerator": null,
-      "denominator": null,
-      "rate": null,
+      "numerator": 4,
+      "denominator": 200,
+      "rate": 2,
       "unit": "%"
     },
     {
@@ -418,9 +418,9 @@
       "name": "14天內非計畫再入院率",
       "code": "1077.01Q",
       "category": "inpatient",
-      "numerator": null,
-      "denominator": null,
-      "rate": null,
+      "numerator": 34,
+      "denominator": 2603,
+      "rate": 1.31,
       "unit": "%"
     },
     {
@@ -429,9 +429,9 @@
       "name": "出院後3天內急診率",
       "code": "108.01",
       "category": "inpatient",
-      "numerator": null,
-      "denominator": null,
-      "rate": null,
+      "numerator": 27,
+      "denominator": 2603,
+      "rate": 1.04,
       "unit": "%"
     },
     {
@@ -440,9 +440,9 @@
       "name": "整體剖腹產率",
       "code": "1136.01",
       "category": "inpatient",
-      "numerator": null,
-      "denominator": null,
-      "rate": null,
+      "numerator": 36,
+      "denominator": 51,
+      "rate": 70.59,
       "unit": "%"
     },
     {
@@ -451,9 +451,9 @@
       "name": "產婦要求剖腹產率",
       "code": "1137.01",
       "category": "inpatient",
-      "numerator": null,
-      "denominator": null,
-      "rate": null,
+      "numerator": 7,
+      "denominator": 51,
+      "rate": 13.73,
       "unit": "%"
     },
     {
@@ -462,9 +462,9 @@
       "name": "有適應症剖腹產率",
       "code": "1138.01",
       "category": "inpatient",
-      "numerator": null,
-      "denominator": null,
-      "rate": null,
+      "numerator": 29,
+      "denominator": 51,
+      "rate": 56.86,
       "unit": "%"
     },
     {
@@ -473,9 +473,9 @@
       "name": "初產婦剖腹產率",
       "code": "1075.01",
       "category": "inpatient",
-      "numerator": null,
-      "denominator": null,
-      "rate": null,
+      "numerator": 26,
+      "denominator": 51,
+      "rate": 50.98,
       "unit": "%"
     },
     {
@@ -484,9 +484,9 @@
       "name": "清淨手術抗生素超3天率",
       "code": "1155",
       "category": "surgery",
-      "numerator": null,
-      "denominator": null,
-      "rate": null,
+      "numerator": 4,
+      "denominator": 23,
+      "rate": 17.39,
       "unit": "%"
     },
     {
@@ -495,9 +495,9 @@
       "name": "體外震波碎石平均利用次數",
       "code": "20.01Q",
       "category": "surgery",
-      "numerator": null,
-      "denominator": null,
-      "rate": null,
+      "numerator": 15,
+      "denominator": 8,
+      "rate": 1.88,
       "unit": "次"
     },
     {
@@ -506,9 +506,9 @@
       "name": "子宮肌瘤術14天再入院率",
       "code": "473.01",
       "category": "surgery",
-      "numerator": null,
-      "denominator": null,
-      "rate": null,
+      "numerator": 4,
+      "denominator": 96,
+      "rate": 4.17,
       "unit": "%"
     },
     {
@@ -517,9 +517,9 @@
       "name": "膝關節置換90天深部感染率",
       "code": "353.01",
       "category": "surgery",
-      "numerator": null,
-      "denominator": null,
-      "rate": null,
+      "numerator": 7,
+      "denominator": 20,
+      "rate": 35,
       "unit": "%"
     },
     {
@@ -528,9 +528,9 @@
       "name": "全膝置換90天深部感染率",
       "code": "3249",
       "category": "surgery",
-      "numerator": null,
-      "denominator": null,
-      "rate": null,
+      "numerator": 5,
+      "denominator": 12,
+      "rate": 41.67,
       "unit": "%"
     },
     {
@@ -539,9 +539,9 @@
       "name": "部分膝置換90天深部感染率",
       "code": "3250",
       "category": "surgery",
-      "numerator": null,
-      "denominator": null,
-      "rate": null,
+      "numerator": 2,
+      "denominator": 8,
+      "rate": 25,
       "unit": "%"
     },
     {
@@ -550,9 +550,9 @@
       "name": "住院手術傷口感染率",
       "code": "1658Q",
       "category": "surgery",
-      "numerator": null,
-      "denominator": null,
-      "rate": null,
+      "numerator": 2,
+      "denominator": 200,
+      "rate": 1,
       "unit": "%"
     },
     {
@@ -561,9 +561,9 @@
       "name": "清淨手術傷口感染率",
       "code": "2524Q",
       "category": "surgery",
-      "numerator": null,
-      "denominator": null,
-      "rate": null,
+      "numerator": 0,
+      "denominator": 23,
+      "rate": 0,
       "unit": "%"
     },
     {
@@ -572,9 +572,9 @@
       "name": "急性心肌梗塞死亡率",
       "code": "1662Q",
       "category": "outcome",
-      "numerator": null,
-      "denominator": null,
-      "rate": null,
+      "numerator": 1,
+      "denominator": 1,
+      "rate": 100,
       "unit": "%"
     },
     {
@@ -583,9 +583,9 @@
       "name": "失智症安寧療護利用率",
       "code": "2795Q",
       "category": "outcome",
-      "numerator": null,
-      "denominator": null,
-      "rate": null,
+      "numerator": 8,
+      "denominator": 24,
+      "rate": 33.33,
       "unit": "%"
     }
   ],
@@ -665,8 +665,8 @@
     "diseaseItems": 5,
     "healthIndicators": 3,
     "esgIndicators": 3,
-    "lastUpdated": "2026-04-11T14:17:20.764Z",
-    "queriedQuality": 0,
+    "lastUpdated": "2026-04-11T14:22:02.026Z",
+    "queriedQuality": 39,
     "queriedDisease": 5,
     "queriedHealth": 3,
     "queriedESG": 3
